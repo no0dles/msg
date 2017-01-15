@@ -1,88 +1,47 @@
 #! /usr/bin/env node
 
-import amqp = require('amqplib');
 import uuid = require('node-uuid');
-import path = require("path");
+import program = require('commander');
 
-import { NodeMessage } from "../models/node.message";
-import { App, InternalWildchard, AppStopped, AppStart, Message, Context } from "@msg/core";
-import { AgentMessage } from "../models/agent.message";
+import { ConfigUtil } from "../utils/config";
+import { MsgNode } from "../classes/msg.node";
+import { RabbitQueue } from "../classes/rabbit.queue";
+import { AppUtil } from "../utils/app";
+import { LoggerUtil } from "../utils/logger";
+import { Config } from "../models/config";
 
-const connection = amqp.connect('amqp://localhost:32777');
-const channel = connection.then(conn => conn.createChannel());
 
-const appPath = path.join(process.cwd(), process.argv[ 2 ]);
-const app = require(appPath) as App;
+const pkg = require('../package.json');
 
-const nodeId = uuid.v1();
+program
+  .version(pkg.version)
+  .option('-q, --queue <url>', 'set queue url. defaults to amqp://localhost')
+  .option('-c, --config <path>', 'set config path. defaults to ./node.yml')
+  .arguments('<file>')
+  .action((file, options) => {
+    try {
+      const app = AppUtil.load(file);
 
-console.log(` [*] node ${nodeId}`);
-console.log(` [*] loaded app on ${appPath}`);
-
-channel.then(ch => {
-  console.log(' [*] connected to channel');
-
-  app.on(InternalWildchard, (message, context) => {
-    if (context.metadata.appId === "" || context.external)
-      return;
-
-    const agentMsg: AgentMessage<any> = {
-      source: {
+      let config: Config = {
         appId: app.id,
-        nodeId: nodeId,
-        context: context.source.context
-      },
-      appId: context.metadata.appId,
-      key: context.metadata.key,
-      data: message
-    };
+        nodeId: uuid.v1(),
+        queue: 'amqp://localhost',
+        nodeQueuePrefix: 'node',
+        agentQueue: 'agent'
+      };
 
-    if (context.source.appId && context.source.nodeId) {
-      if (context.metadata.appId == context.source.appId) {
-        agentMsg.destination = {
-          appId: context.source.appId,
-          nodeId: context.source.nodeId,
-          context: context.source.context
-        };
-      }
+      config = ConfigUtil.merge(config, ConfigUtil.load(options.config));
+      config = ConfigUtil.merge(config, {
+        queue: options.queue || config.queue,
+      });
+
+      const queue = new RabbitQueue(config);
+      const node = new MsgNode(app, queue, config);
+
+      node.run();
+    } catch(err) {
+      LoggerUtil.error(err.stack);
     }
-
-    console.log(` [*] send ${agentMsg.key} message to agent`);
-
-    const data = JSON.stringify(agentMsg);
-    ch.sendToQueue('agent', new Buffer(data));
   });
 
-  app.on(AppStopped, () => {
-    console.log(' [*] app stopped');
-  });
-
-  ch.assertQueue(`node.${app.id}`, { durable: true });
-  ch.assertQueue(`node.${app.id}.${nodeId}`, { durable: true });
-
-  ch.prefetch(1);
-
-  ch.consume(`node.${app.id}`, (msg) => handleMsg(msg));
-  ch.consume(`node.${app.id}.${nodeId}`, (msg) => handleMsg(msg));
-
-  const handleMsg = (msg: amqp.Message) => {
-    const content = msg.content.toString();
-    const nodeMsg = JSON.parse(content) as NodeMessage<any>;
-
-    console.log(' [x] received %s', content);
-
-    const context = new Context(app, nodeMsg.source);
-    context.external = true;
-
-    app.emit(nodeMsg.key, nodeMsg.data, context);
-
-    ch.ack(msg);
-  };
-
-  const hasAppStart = Object
-    .keys(app.handles)
-    .some(key => key === Message.parse(<any>AppStart.prototype).key);
-
-  if (hasAppStart)
-    app.emit(new AppStart());
-});
+program.parse(process.argv);

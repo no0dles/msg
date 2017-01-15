@@ -1,7 +1,7 @@
 {
   "name": "@msg/node",
   "description": "",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "main": "index.js",
   "bin": {
     "msgnode": "bin/cli.js"
@@ -26,14 +26,18 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "0.0.0",
+    "@msg/core": "0.0.1",
     "amqplib": "^0.5.1",
-    "node-uuid": "^1.4.7"
+    "commander": "^2.9.0",
+    "node-uuid": "^1.4.7",
+    "yamljs": "^0.2.8"
   },
   "devDependencies": {
-    "@types/node": "^6.0.59",
     "@types/amqplib": "^0.5.0",
+    "@types/commander": "^2.3.31",
+    "@types/node": "^6.0.59",
     "@types/node-uuid": "0.0.28",
+    "@types/yamljs": "^0.2.30",
     "typescript": "^2.1.4"
   }
 }
