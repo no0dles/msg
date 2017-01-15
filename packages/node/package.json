@@ -1,0 +1,39 @@
+{
+  "name": "@msg/node",
+  "description": "",
+  "version": "0.0.2",
+  "main": "index.js",
+  "bin": {
+    "msgnode": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "https://github.com/no0dles/msg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/msg.git"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/msg/issues"
+  },
+  "author": "no0dles",
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "The MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "dependencies": {
+    "@msg/core": "0.0.0",
+    "amqplib": "^0.5.1",
+    "node-uuid": "^1.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^6.0.59",
+    "@types/amqplib": "^0.5.0",
+    "@types/node-uuid": "0.0.28",
+    "typescript": "^2.1.4"
+  }
+}

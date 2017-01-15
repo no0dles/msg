@@ -1,0 +1,38 @@
+{
+  "name": "@msg/agent",
+  "description": "",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "msgagent": "bin/cli.js"
+  },
+  "homepage": "https://github.com/no0dles/msg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/msg.git"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/msg/issues"
+  },
+  "author": "no0dles",
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "The MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "dependencies": {
+    "@msg/core": "0.0.0",
+    "@msg/node": "0.0.2",
+    "amqplib": "^0.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^6.0.59",
+    "@types/amqplib": "^0.5.0",
+    "typescript": "^2.1.4"
+  }
+}
