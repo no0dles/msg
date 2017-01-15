@@ -1,0 +1,13 @@
+app:
+  path: ./app.js
+  instances: 3
+
+http1:
+  module: @msg/http
+  env:
+    PORT: 3001
+
+http2:
+  module: @msg/http
+  env:
+    PORT: 3002
