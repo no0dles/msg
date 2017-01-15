@@ -11,3 +11,6 @@ install:
 
 script:
   - gulp build
+
+notifications:
+  email: false
