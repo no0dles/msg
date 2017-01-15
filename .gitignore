@@ -1,3 +1,5 @@
 packages/**/*.js
 packages/**/*.js.map
+
+packages/*/node_modules
 .idea
