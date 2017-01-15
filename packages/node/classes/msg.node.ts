@@ -45,7 +45,7 @@ export class MsgNode {
       }
     }
 
-    this.queue.post(agentMsg);
+    this.queue.post(this.config.agentQueue, agentMsg);
   }
 
   private onQueueConnect() {

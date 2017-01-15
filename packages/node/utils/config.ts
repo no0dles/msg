@@ -2,20 +2,18 @@ import path = require('path');
 import fs = require('fs');
 import yaml = require('yamljs');
 
-import { Config } from "../models/config";
-
 export class ConfigUtil {
-  public static load(configFile: string): Config {
-    const configPath = path.join(process.cwd(), configFile || 'node.yml');
+  public static load<TConfig>(file: string, defaultFile: string): TConfig {
+    const configPath = path.join(process.cwd(), file || defaultFile);
 
     if(fs.existsSync(configPath)) {
-      return yaml.load(configPath) as Config || {};
+      return (yaml.load(configPath) || {}) as TConfig ;
     }
 
-    return {};
+    return {} as TConfig;
   }
 
-  public static merge(base: Config, extension: Config) {
+  public static merge(base: any, extension: any): any {
     return { ...base, ...extension };
   }
 }

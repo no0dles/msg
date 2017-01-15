@@ -3,6 +3,7 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "typeRoots": ["node_modules/@types"]

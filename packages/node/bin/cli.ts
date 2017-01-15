@@ -30,7 +30,7 @@ program
         agentQueue: 'agent'
       };
 
-      config = ConfigUtil.merge(config, ConfigUtil.load(options.config));
+      config = ConfigUtil.merge(config, ConfigUtil.load(options.config, '.node.yml'));
       config = ConfigUtil.merge(config, {
         queue: options.queue || config.queue,
       });

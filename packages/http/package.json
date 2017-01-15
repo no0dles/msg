@@ -3,9 +3,7 @@
   "description": "",
   "version": "0.0.3",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "typings": "index.d.ts",
   "homepage": "https://github.com/no0dles/msg",
   "repository": {
     "type": "git",
@@ -23,7 +21,7 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "0.0.1",
+    "@msg/core": "0.0.2",
     "node-uuid": "^1.4.7"
   },
   "devDependencies": {

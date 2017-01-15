@@ -1,11 +1,9 @@
 {
   "name": "@msg/agent",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "typings": "index.d.ts",
   "bin": {
     "msgagent": "bin/cli.js"
   },
@@ -26,13 +24,17 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "0.0.0",
-    "@msg/node": "0.0.2",
-    "amqplib": "^0.5.1"
+    "@msg/core": "0.0.3",
+    "@msg/node": "0.0.7",
+    "amqplib": "^0.5.1",
+    "commander": "^2.9.0",
+    "yamljs": "^0.2.8"
   },
   "devDependencies": {
-    "@types/node": "^6.0.59",
     "@types/amqplib": "^0.5.0",
+    "@types/commander": "^2.3.31",
+    "@types/node": "^6.0.59",
+    "@types/yamljs": "^0.2.30",
     "typescript": "^2.1.4"
   }
 }

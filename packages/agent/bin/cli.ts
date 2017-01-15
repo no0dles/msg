@@ -1,48 +1,43 @@
 #! /usr/bin/env node
 
-import amqp = require('amqplib');
+import program = require('commander');
 
-import { NodeMessage, AgentMessage } from "@msg/node";
-import { AgentConfig } from "../models/agent.config";
+import { Config } from "../models/config";
+import { RabbitQueue } from "../classes/rabbit.queue";
+import { MsgAgent } from "../classes/msg.agent";
+import { ConfigUtil } from "@msg/node/utils/config";
 
-const config = require('./../../../src/msg.agent.json') as AgentConfig;
-const connection = amqp.connect('amqp://localhost:32777');
-const channel = connection.then(conn => conn.createChannel());
+const pkg = require('../package.json');
 
-channel.then(ch => {
-  console.log(' [*] connected to channel');
+program
+  .version(pkg.version)
+  .option('-q, --queue <url>', 'set queue url. defaults to amqp://localhost')
+  .option('-c, --config <path>', 'set config path. defaults to ./agent.yml')
+  .command('run')
+  .action((options) => {
+    try {
+      let config: Config = {
+        queue: 'amqp://localhost',
+        nodeQueuePrefix: 'node',
+        agentQueue: 'agent'
+      };
 
-  ch.assertQueue('agent', {durable: true});
-  ch.prefetch(1);
+      console.log(options);
 
-  ch.consume('agent', (msg) => {
-    const content = msg.content.toString();
-    const agentMsg = JSON.parse(content) as AgentMessage<any>;
+      config = ConfigUtil.merge(config, ConfigUtil.load(options.config, '.agent.yml'));
+      config = ConfigUtil.merge(config, {
+        queue: options.queue || config.queue,
+      });
 
-    console.log(` [x] received ${agentMsg.key} message from ${agentMsg.source.nodeId}`);
+      console.log(config);
 
-    const nodeMsg : NodeMessage<any> = {
-      key: agentMsg.key,
-      source: agentMsg.source,
-      appId: agentMsg.appId,
-      data: agentMsg.data
-    };
+      const queue = new RabbitQueue(config);
+      const node = new MsgAgent(queue, config);
 
-    const appIds = config.handles[`${nodeMsg.appId}.${nodeMsg.key}`] || [];
-
-    for(let appId of appIds) {
-      let queue = `node.${appId}`;
-      if(agentMsg.destination) {
-        queue = `node.${agentMsg.destination.appId}.${agentMsg.destination.nodeId}`;
-      }
-
-      const data = JSON.stringify(nodeMsg);
-
-      console.log(` [x] sending ${agentMsg.key} message to ${queue}`);
-
-      if(ch.sendToQueue(queue, new Buffer(data))) {
-        ch.ack(msg);
-      }
+      node.run();
+    } catch(err) {
+      console.log(err);
     }
   });
-});
+
+program.parse(process.argv);

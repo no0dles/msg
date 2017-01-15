@@ -1,13 +1,11 @@
 {
   "name": "@msg/node",
   "description": "",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "main": "index.js",
+  "typings": "index.d.ts",
   "bin": {
     "msgnode": "bin/cli.js"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "homepage": "https://github.com/no0dles/msg",
   "repository": {
@@ -26,7 +24,7 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "0.0.1",
+    "@msg/core": "0.0.3",
     "amqplib": "^0.5.1",
     "commander": "^2.9.0",
     "node-uuid": "^1.4.7",

@@ -1,5 +1,9 @@
-packages/**/*.js
-packages/**/*.js.map
+*.js
+*.js.map
+*.d.ts
+npm-debug.log
 
 packages/*/node_modules
 .idea
+
+!gulpfile.js

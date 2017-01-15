@@ -39,14 +39,14 @@ export class RabbitQueue extends EventEmitter implements Queue {
   }
 
   public close() {
-    return this.channel.close().then(() => {
+    this.channel.close().then(() => {
       return this.connection.close();
     });
   }
 
-  public post(data: any) {
+  public post(queue: string, data: any) {
     const json = JSON.stringify(data);
-    this.channel.sendToQueue(this.config.agentQueue, new Buffer(json));
+    this.channel.sendToQueue(queue, new Buffer(json));
   }
 
   private handleMsg(msg: amqp.Message) {

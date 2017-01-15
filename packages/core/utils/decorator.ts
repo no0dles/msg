@@ -1,9 +1,5 @@
 import "reflect-metadata";
-
-export interface Decorator<T> {
-  (value: T): Function;
-  parse(obj: T): T;
-}
+import { Decorator } from "../models/decorator";
 
 export function makeDecorator<T>(name: string, defaultValue: any): Decorator<T> {
 

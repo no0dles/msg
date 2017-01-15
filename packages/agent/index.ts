@@ -1,2 +1,3 @@
-export * from "./models/agent.config";
-export * from "../node/models/agent.message";
+export * from "./models/config";
+export * from "./classes/msg.agent";
+export * from "./classes/rabbit.queue";
