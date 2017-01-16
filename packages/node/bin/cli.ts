@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import uuid = require('node-uuid');
+import uuid = require('uuid');
 import program = require('commander');
 
 import { ConfigUtil } from "../utils/config";

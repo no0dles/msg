@@ -1,10 +1,13 @@
 {
   "name": "@msg/http",
   "description": "",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "index.js",
   "typings": "index.d.ts",
   "homepage": "https://github.com/no0dles/msg",
+  "scripts": {
+    "start": "node_modules/.bin/msgnode app.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/no0dles/msg.git"
@@ -21,10 +24,12 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "^0.0.5",
-    "node-uuid": "^1.4.7"
+    "@msg/core": "^0.0.8",
+    "@msg/node": "0.0.12",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "@types/uuid": "^2.0.29",
     "@types/mocha": "^2.2.37",
     "@types/node-uuid": "0.0.28",
     "@types/node": "^6.0.59",

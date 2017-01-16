@@ -1,7 +1,7 @@
 {
   "name": "@msg/node",
   "description": "",
-  "version": "0.0.8",
+  "version": "0.0.12",
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
@@ -24,19 +24,19 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "^0.0.5",
+    "@msg/core": "^0.0.8",
     "amqplib": "^0.5.1",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "node-uuid": "^1.4.7",
+    "uuid": "^3.0.1",
     "yamljs": "^0.2.8"
   },
   "devDependencies": {
+    "@types/uuid": "^2.0.29",
     "@types/amqplib": "^0.5.0",
     "@types/colors": "^1.1.1",
     "@types/commander": "^2.3.31",
     "@types/node": "^6.0.59",
-    "@types/node-uuid": "0.0.28",
     "@types/yamljs": "^0.2.30",
     "typescript": "^2.1.4"
   }

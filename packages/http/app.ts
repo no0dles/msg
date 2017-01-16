@@ -1,5 +1,5 @@
 import http = require("http");
-import uuid = require("node-uuid");
+import uuid = require("uuid");
 
 import { App, AppStart, AppStarted, AppStop, AppStopped } from "@msg/core";
 import { HttpRequest } from "./messages/http.request";
