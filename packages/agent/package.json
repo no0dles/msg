@@ -24,8 +24,8 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "0.0.3",
-    "@msg/node": "0.0.7",
+    "@msg/core": "^0.0.3",
+    "@msg/node": "^0.0.8",
     "amqplib": "^0.5.1",
     "commander": "^2.9.0",
     "yamljs": "^0.2.8"

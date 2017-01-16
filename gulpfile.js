@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const bump = require('gulp-bump');
+const mocha = require('gulp-mocha');
 const spawn = require('child_process').spawn;
 const path = require('path');
 
@@ -19,6 +20,16 @@ function run(package, command, args) {
       .on('close', done);
   }
 }
+
+function testPackage(package) {
+  return function () {
+    var testFiles = path.join(packagesPath, package, '**/*.test.js');
+    console.log(testFiles);
+    gulp.src(testFiles, {read: false})
+      .pipe(mocha({reporter: 'list'}));
+  }
+}
+
 
 function installPackage(package) {
   return run(package, 'npm', ['install']);
@@ -49,9 +60,16 @@ for(var i = 0; i < packages.length; i++) {
   gulp.task('install-' + package, installPackage(package));
   gulp.task('build-' + package, buildPackage(package));
   gulp.task('bump-' + package, bumpPackage(package));
+  gulp.task('test-' + package, testPackage(package));
   gulp.task('publish-' + package, ['bump-' + package], publishPackage(package));
 }
 
 bundle('install');
 bundle('build');
 bundle('publish');
+
+gulp.task('test', function () {
+  var testFiles = path.join(packagesPath, '**/*.test.js');
+  gulp.src(testFiles, {read: false})
+    .pipe(mocha({reporter: 'list'}));
+});

@@ -11,9 +11,9 @@ const pkg = require('../package.json');
 
 program
   .version(pkg.version)
+  .command('run')
   .option('-q, --queue <url>', 'set queue url. defaults to amqp://localhost')
   .option('-c, --config <path>', 'set config path. defaults to ./agent.yml')
-  .command('run')
   .action((options) => {
     try {
       let config: Config = {
@@ -22,14 +22,10 @@ program
         agentQueue: 'agent'
       };
 
-      console.log(options);
-
       config = ConfigUtil.merge(config, ConfigUtil.load(options.config, '.agent.yml'));
       config = ConfigUtil.merge(config, {
         queue: options.queue || config.queue,
       });
-
-      console.log(config);
 
       const queue = new RabbitQueue(config);
       const node = new MsgAgent(queue, config);

@@ -1,5 +1,5 @@
 import { Message } from "../decorators/message";
-import { Handler } from "./handler";
+import { Handler } from "../models/handler";
 import { Type } from "../models/type";
 import { Handle } from "./handle";
 import { Context } from "./context";
@@ -12,46 +12,34 @@ export class App {
 
   }
 
-  on<TMessage>(type: Type<TMessage>, handler: Handler<TMessage>) {
+  public on<TMessage>(type: Type<TMessage>, handler: Handler<TMessage>) {
     const metadata = Message.parse(type.prototype);
-
     if(!metadata)
-      throw new Error("Invalid type");
+      throw new Error("missing message decorator");
 
     const handle = this.handles[metadata.key] || new Handle(metadata);
-
     handle.add(handler);
 
     this.handles[metadata.key] = handle;
   }
 
-  emit<TMessage>(key: string, data: TMessage, context?: Context)
-  emit<TMessage>(data: TMessage, context?: Context)
-  emit<TMessage>(keyOrData: string | TMessage, dataOrContext?: TMessage | Context, context?: Context) {
+  public emit<TMessage>(key: string, data: TMessage, context?: Context)
+  public emit<TMessage>(data: TMessage, context?: Context)
+  public emit<TMessage>(keyOrData: string | TMessage, dataOrContext?: TMessage | Context, context?: Context) {
+    let metadata = this.getMetadata<Message>(keyOrData);
+    if(!metadata)
+      throw new Error("unknown message");
 
-    let metadata: Message;
     let message: any;
-
     if(typeof keyOrData === "string") {
-      const handle = this.handles[keyOrData];
-
-      if(!handle)
-        return;
-
-      metadata = handle.metadata;
       message = dataOrContext;
     } else {
-      metadata = Message.parse(<any>keyOrData);
       message = keyOrData;
       context = <any>dataOrContext;
-
-      if(!metadata)
-        throw new Error("unknown message");
     }
 
-    if(!context) {
+    if(!context)
       context = new Context(this, {});
-    }
 
     context.metadata = metadata;
 
@@ -65,4 +53,16 @@ export class App {
     }
   }
 
+  private getMetadata<TMessage>(keyOrData: string | TMessage) {
+    if(typeof keyOrData === "string") {
+      const handle = this.handles[keyOrData];
+
+      if(!handle)
+        return null;
+
+      return handle.metadata;
+    } else {
+      return Message.parse(<any>keyOrData);
+    }
+  }
 }

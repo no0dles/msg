@@ -21,10 +21,11 @@
     }
   ],
   "dependencies": {
-    "@msg/core": "0.0.2",
+    "@msg/core": "^0.0.5",
     "node-uuid": "^1.4.7"
   },
   "devDependencies": {
+    "@types/mocha": "^2.2.37",
     "@types/node-uuid": "0.0.28",
     "@types/node": "^6.0.59",
     "typescript": "^2.1.4"

@@ -25,6 +25,8 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-bump": "^2.5.1",
+    "gulp-mocha": "^3.0.1",
+    "mocha": "^3.2.0",
     "typescript": "^2.1.5"
   }
 }

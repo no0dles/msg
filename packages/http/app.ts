@@ -55,11 +55,9 @@ app.on(AppStart, (message, context) => {
 });
 
 app.on(AppStop, (message, context) => {
-
   server.close(() => {
     context.emit(new AppStopped());
   });
-
 });
 
 app.on(HttpResponse, (message, context) => {

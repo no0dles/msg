@@ -1,6 +1,6 @@
 export * from "./classes/app";
 export * from "./classes/context";
-export * from "./classes/handler";
+export * from "./models/handler";
 export * from "./decorators/message";
 export * from "./models/message.destination";
 export * from "./models/message.source";

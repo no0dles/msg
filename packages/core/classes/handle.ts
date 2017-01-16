@@ -1,4 +1,4 @@
-import { Handler } from "./handler";
+import { Handler } from "../models/handler";
 import { Context } from "./context";
 import { Message } from "../decorators/message";
 

@@ -1,7 +1,7 @@
 {
   "name": "@msg/core",
   "description": "",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "main": "index.js",
   "typings": "index.d.ts",
   "homepage": "https://github.com/no0dles/msg",
@@ -24,6 +24,7 @@
     "reflect-metadata": "^0.1.9"
   },
   "devDependencies": {
+    "@types/mocha": "^2.2.37",
     "@types/node": "^6.0.59",
     "typescript": "^2.1.4"
   }

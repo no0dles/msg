@@ -3,6 +3,7 @@ import { Queue } from "../models/queue";
 import { App, Message, AppStart, AppStopped, InternalWildchard, Context } from "@msg/core";
 import { NodeMessage } from "../models/node.message";
 import { AgentMessage } from "../models/agent.message";
+import { LoggerUtil } from "../utils/logger";
 
 export class MsgNode {
   constructor(private app: App,
@@ -11,6 +12,8 @@ export class MsgNode {
 
     this.queue.on('connect', () => this.onQueueConnect());
     this.queue.on('message', msg => this.onQueueMessage(msg));
+
+    console.log(Message.parse(InternalWildchard.prototype));
 
     this.app.on(InternalWildchard, (message, context) => this.onAppMessage(message, context));
     this.app.on(AppStopped, () => this.onAppStopped());
@@ -23,6 +26,9 @@ export class MsgNode {
   private onAppMessage(message: Message, context: Context) {
     if (context.metadata.appId === "" || context.external)
       return;
+
+    console.log(message);
+    console.log(context);
 
     const agentMsg: AgentMessage<any> = {
       source: {
@@ -45,16 +51,14 @@ export class MsgNode {
       }
     }
 
+    LoggerUtil.debug(`post message ${agentMsg.appId}.${agentMsg.key}`);
+
     this.queue.post(this.config.agentQueue, agentMsg);
   }
 
   private onQueueConnect() {
-    const hasAppStart = Object
-      .keys(this.app.handles)
-      .some(key => key === Message.parse(<any>AppStart.prototype).key);
-
-    if (hasAppStart)
-      this.app.emit(new AppStart());
+    LoggerUtil.debug('emit app start');
+    this.app.emit(new AppStart());
   }
 
   private onQueueMessage(msg: NodeMessage<any>) {

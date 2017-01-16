@@ -1,0 +1,6 @@
+tsconfig.json
+
+**/*.test.js
+**/*.test.ts
+**/*.test.d.ts
+**/*.test.js.map

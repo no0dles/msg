@@ -1,6 +1,6 @@
 import amqp = require('amqplib');
 
-import { AgentMessage } from "@msg/node";
+import { AgentMessage, LoggerUtil } from "@msg/node";
 import { Config } from "../models/config";
 import { EventEmitter } from "events";
 import { Queue } from "@msg/node/models/queue";
@@ -23,7 +23,7 @@ export class RabbitQueue extends EventEmitter implements Queue {
     channelPromise.then(channel => {
       this.channel = channel;
 
-      console.log('connected to channel');
+      LoggerUtil.debug('connected to channel');
 
       channel.assertQueue(this.config.agentQueue, {durable: true});
       channel.prefetch(1);
@@ -32,7 +32,8 @@ export class RabbitQueue extends EventEmitter implements Queue {
         const content = msg.content.toString();
         const agentMsg = JSON.parse(content) as AgentMessage<any>;
 
-        console.log('received message', agentMsg);
+        LoggerUtil.debug(`received message from ${agentMsg.source.appId}.${!agentMsg.source.nodeId}`);
+        LoggerUtil.debug(content);
 
         this.emit('message', agentMsg);
 
