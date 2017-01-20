@@ -5,12 +5,12 @@ export class DecoratorUtil {
   public static create<T>(name: string, defaultValue: any): Decorator<T> {
     const fn: any = (value: T) => {
       return function(target: Function) {
-        Reflect.defineMetadata(name, value, target)
+        Reflect.defineMetadata(name, value, target.prototype)
       };
     };
 
     fn.parse = (value: T) => {
-      const metadata = Reflect.getMetadata(name, value.constructor);
+      const metadata = Reflect.getMetadata(name, value);
 
       if(!metadata)
         return null;

@@ -1,26 +1,17 @@
-import { Handler } from "../models/handler";
-import { Context } from "./context";
+import { Listener } from "../models/listener";
 import { Message } from "../decorators/message";
 
 export class Handle<TMessage> {
-  public handlers: Handler<TMessage>[] = [];
+  public listeners: Listener<TMessage>[] = [];
 
-  constructor(public metadata: Message) {
+  constructor(public metadata: Message) {}
 
-  }
-
-  add(handler: Handler<TMessage>) {
-    this.handlers.push(handler);
+  add(listener: Listener<TMessage>): void {
+    this.listeners.push(listener);
   }
 
   matches(key: string): boolean {
     if(this.metadata.key === "*") return true;
     return key === this.metadata.key;
-  }
-
-  handle(message: TMessage, context: Context) {
-    for(let handler of this.handlers) {
-      handler(message, context);
-    }
   }
 }

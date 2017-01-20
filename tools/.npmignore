@@ -1,0 +1,4 @@
+**/*.test.js
+**/*.test.js.map
+../packages/core/classes/app.test.ts
+**/*.test.d.ts

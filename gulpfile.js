@@ -3,6 +3,7 @@ const bump = require('gulp-bump');
 const mocha = require('gulp-mocha');
 const spawn = require('child_process').spawn;
 const path = require('path');
+const build = require('./tools/build');
 
 const packagesPath = path.join(__dirname, 'packages');
 const packages = ['core', 'agent', 'node', 'http', 'scheduler'];
@@ -24,7 +25,6 @@ function run(package, command, args) {
 function testPackage(package) {
   return function () {
     var testFiles = path.join(packagesPath, package, '**/*.test.js');
-    console.log(testFiles);
     gulp.src(testFiles, {read: false})
       .pipe(mocha({reporter: 'list'}));
   }
@@ -73,3 +73,6 @@ gulp.task('test', function () {
   gulp.src(testFiles, {read: false})
     .pipe(mocha({reporter: 'list'}));
 });
+
+
+gulp.task('demo-build', build.buildPackage('core'));

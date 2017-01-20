@@ -5,6 +5,7 @@ import { App, AppStart, AppStarted, AppStop, AppStopped } from "@msg/core";
 import { HttpRequest } from "./messages/http.request";
 import { HttpResponse } from "./messages/http.response";
 import { Server, IncomingMessage, ServerResponse } from "http";
+import { LoggerUtil } from "../node/utils/logger";
 
 const app = new App("http");
 
@@ -26,7 +27,6 @@ app.on(AppStart, (message, context) => {
     req.httpVersionMinor = request.httpVersionMinor;
 
     responses[ responseId ] = response;
-    context.source.context.responseId = responseId;
 
     const chunks = [];
 
@@ -36,19 +36,22 @@ app.on(AppStart, (message, context) => {
       })
       .on('end', () => {
         req.body = Buffer.concat(chunks).toString();
-        context.emit(req);
+        context.emit(req, {
+          expiration: 30,
+          headers: { 'responseId': responseId }
+        });
       });
 
   });
 
-  const port = app.config[ 'port' ] || process.env.PORT || 3000;
-  const hostname = app.config[ 'hostname' ] || 'localhost';
+  const port = process.env.PORT || 3000;
+  const hostname = process.env.HOSTNAME || 'localhost';
 
   server.listen(port, hostname, (err) => {
     if (err) {
       return console.error(err)
     }
-
+    LoggerUtil.info('http server started');
     context.emit(new AppStarted());
   });
 
@@ -61,7 +64,7 @@ app.on(AppStop, (message, context) => {
 });
 
 app.on(HttpResponse, (message, context) => {
-  const responseId = context.source.context.responseId;
+  const responseId = context.options.headers['responseId'];
 
   if (!responseId) {
     console.log(`no response id!`);

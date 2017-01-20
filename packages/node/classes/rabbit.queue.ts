@@ -37,8 +37,8 @@ export class RabbitQueue extends EventEmitter implements Queue {
       const appQueue = `${this.config.nodeQueuePrefix}.${this.config.appId}`;
       const nodeQueue = `${appQueue}.${this.config.nodeId}`;
 
-      channel.assertQueue(appQueue, { durable: true });
-      channel.assertQueue(nodeQueue, { durable: true });
+      channel.assertQueue(appQueue/*, { durable: true }*/);
+      channel.assertQueue(nodeQueue/*, { durable: true }*/);
 
       channel.prefetch(1);
 

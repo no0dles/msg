@@ -8,7 +8,7 @@
     "stripInternal": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist",
+    "outDir": ".dist",
     "typeRoots": ["node_modules/@types"]
   },
   "exclude": [

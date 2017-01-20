@@ -1,31 +1,14 @@
 {
   "name": "@msg/core",
   "description": "",
-  "version": "0.0.8",
-  "main": "index.js",
-  "typings": "index.d.ts",
-  "homepage": "https://github.com/no0dles/msg",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/no0dles/msg.git"
-  },
-  "bugs": {
-    "url": "https://github.com/no0dles/msg/issues"
-  },
-  "author": "no0dles",
-  "license": "MIT",
-  "licenses": [
-    {
-      "type": "The MIT License",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
+  "version": "0.0.17",
   "dependencies": {
+    "es6-promise": "^4.0.5",
     "reflect-metadata": "^0.1.9"
   },
   "devDependencies": {
+    "@types/es6-promise": "0.0.32",
     "@types/mocha": "^2.2.37",
-    "@types/node": "^6.0.59",
-    "typescript": "^2.1.4"
+    "@types/node": "^6.0.59"
   }
 }

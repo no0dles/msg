@@ -25,6 +25,7 @@ program
       config = ConfigUtil.merge(config, ConfigUtil.load(options.config, '.agent.yml'));
       config = ConfigUtil.merge(config, {
         queue: options.queue || config.queue,
+        handles: config.handles || []
       });
 
       const queue = new RabbitQueue(config);

@@ -1,10 +1,12 @@
 import { Config } from "../models/config";
-import { Queue, AgentMessage, NodeMessage } from "@msg/node";
+import { Queue, AgentMessage, NodeMessage, LoggerUtil } from "@msg/node";
 
 export class MsgAgent {
   constructor(private queue: Queue,
               private config: Config) {
     this.queue.on('message', msg => this.onMessage(msg));
+
+    LoggerUtil.debug(`register handles ${Object.keys(config.handles)}`);
   }
 
   run() {

@@ -3,6 +3,7 @@
   "description": "",
   "version": "0.0.0",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "build": "gulp build"
   },
@@ -26,6 +27,9 @@
     "gulp": "^3.9.1",
     "gulp-bump": "^2.5.1",
     "gulp-mocha": "^3.0.1",
+    "gulp-sourcemaps": "^2.4.0",
+    "gulp-typescript": "^3.1.4",
+    "merge2": "^1.0.3",
     "mocha": "^3.2.0",
     "typescript": "^2.1.5"
   }

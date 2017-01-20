@@ -1,21 +1,32 @@
 import { Message } from "../decorators/message";
-import { App } from "./app";
-import { MessageSource } from "../models/message.source";
+import { Options } from "../models/options";
+import { ContextHandler } from "../models/context.handler";
+import { Result } from "./result";
 
 export class Context {
-  public external: boolean = false;
-  public metadata: Message;
+  public properties: { [key: string]: any; } = {};
 
-  constructor(private app: App, public source: MessageSource) {
-    if(!this.source.context) {
-      this.source.context = {};
-    }
+  constructor(private handler: ContextHandler,
+              public metadata: Message,
+              public options: Options) {
+
   }
 
-  public emit(data: any): void {
-    const context = new Context(this.app, this.source);
-    context.external = false;
+  emit(message: any, options?: Options): Result {
+    return this.handler.emit(message, options);
+  }
 
-    this.app.emit(data, context);
+  end(): void
+  end(error: Error): void
+  end(message: any, options?: Options): void
+  end(errorOrMessage?: Error | any, options?: Options): void {
+    if(errorOrMessage instanceof Error) {
+      this.handler.done(errorOrMessage);
+    } else {
+      if(errorOrMessage)
+        this.handler.emit(errorOrMessage);
+
+      this.handler.done();
+    }
   }
 }

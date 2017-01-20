@@ -1,4 +1,4 @@
-import { MessageSource } from "@msg/core";
+import { MessageSource } from "./message.source";
 
 export interface NodeMessage<TData> {
   source: MessageSource;

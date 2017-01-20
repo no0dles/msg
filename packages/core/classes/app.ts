@@ -1,56 +1,76 @@
 import { Message } from "../decorators/message";
-import { Handler } from "../models/handler";
 import { Type } from "../models/type";
 import { Handle } from "./handle";
-import { Context } from "./context";
+import { Listener } from "../models/listener";
+import { Options } from "../models/options";
+import { InternalWildchard } from "../messages/internal.wildchard.message";
+import { Result } from "./result";
 
 export class App {
+  public apps: App[] = [];
   public handles: { [key: string]: Handle<any> } = {};
-  public config: { [key: string]: any } = {};
 
   constructor(public id: string) {
 
   }
 
-  public on<TMessage>(type: Type<TMessage>, handler: Handler<TMessage>) {
-    const metadata = Message.parse(type.prototype);
+  public use(app: App) {
+    for(let key in app.handles) {
+      if(key in this.handles) {
+        for(let listener of app.handles[key].listeners) {
+          this.handles[key].add(listener);
+        }
+      } else {
+        this.handles[key] = app.handles[key];
+      }
+    }
+
+    for(let subApp of app.apps) {
+      this.apps.push(subApp);
+    }
+  }
+
+  public on<TMessage>(listener: Listener<TMessage>)
+  public on<TMessage>(type: Type<TMessage>, listener: Listener<TMessage>)
+  public on<TMessage>(typeOrListener: Type<TMessage> | Listener<TMessage>, listener?: Listener<TMessage>) {
+    let messageType: Type<Message>;
+    if(listener) {
+      messageType = <Type<TMessage>>typeOrListener;
+    } else {
+      messageType = InternalWildchard;
+      listener = <any>typeOrListener;
+    }
+
+    const metadata = Message.parse(messageType);
     if(!metadata)
-      throw new Error("missing message decorator");
+      throw new Error(`missing message decorator for ${messageType}`);
 
     const handle = this.handles[metadata.key] || new Handle(metadata);
-    handle.add(handler);
+    handle.add(listener);
 
     this.handles[metadata.key] = handle;
   }
 
-  public emit<TMessage>(key: string, data: TMessage, context?: Context)
-  public emit<TMessage>(data: TMessage, context?: Context)
-  public emit<TMessage>(keyOrData: string | TMessage, dataOrContext?: TMessage | Context, context?: Context) {
+  public emit<TMessage>(key: string, data: TMessage, options?: Options)
+  public emit<TMessage>(data: TMessage, options?: Options)
+  public emit<TMessage>(keyOrData: string | TMessage, dataOrOptions?: TMessage | Options, options?: Options) {
     let metadata = this.getMetadata<Message>(keyOrData);
     if(!metadata)
-      throw new Error("unknown message");
+      throw new Error(`unknown message ${keyOrData}`);
 
     let message: any;
     if(typeof keyOrData === "string") {
-      message = dataOrContext;
+      message = dataOrOptions;
     } else {
       message = keyOrData;
-      context = <any>dataOrContext;
+      options = <any>dataOrOptions;
     }
 
-    if(!context)
-      context = new Context(this, {});
-
-    context.metadata = metadata;
-
-    for(let handleKey in this.handles) {
-      const handle = this.handles[handleKey];
-
-      if(!handle.matches(metadata.key))
-        continue;
-
-      handle.handle(message, context);
+    if(!options) {
+      options = { headers: {} };
     }
+
+    return new Result(this, message, metadata, options);
   }
 
   private getMetadata<TMessage>(keyOrData: string | TMessage) {

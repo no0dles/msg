@@ -1,8 +1,10 @@
 tsconfig.json
 
 **/*.ts
+!**/*.d.ts
 *.tgz
 
 **/*.test.js
+**/*.test.ts
 **/*.test.d.ts
 **/*.test.js.map

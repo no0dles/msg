@@ -1,22 +1,22 @@
 import { Config } from "../models/config";
 import { Queue } from "../models/queue";
-import { App, Message, AppStart, AppStopped, InternalWildchard, Context } from "@msg/core";
+import { App, Message, AppStart, AppStopped, Context } from "@msg/core";
 import { NodeMessage } from "../models/node.message";
 import { AgentMessage } from "../models/agent.message";
 import { LoggerUtil } from "../utils/logger";
+import { EventEmitter } from "events";
 
-export class MsgNode {
+export class MsgNode extends EventEmitter {
   constructor(private app: App,
               private queue: Queue,
               private config: Config) {
+    super();
 
     this.queue.on('connect', () => this.onQueueConnect());
     this.queue.on('message', msg => this.onQueueMessage(msg));
 
-    console.log(Message.parse(InternalWildchard.prototype));
-
-    this.app.on(InternalWildchard, (message, context) => this.onAppMessage(message, context));
     this.app.on(AppStopped, () => this.onAppStopped());
+    this.app.on((message, context) => this.onAppMessage(message, context));
   }
 
   private onAppStopped() {
@@ -24,7 +24,10 @@ export class MsgNode {
   }
 
   private onAppMessage(message: Message, context: Context) {
-    if (context.metadata.appId === "" || context.external)
+    const sourceMsg = context.properties['sourceMsg'] as NodeMessage<any>;
+    console.log(sourceMsg);
+
+    if (context.metadata.appId === "" || (sourceMsg.key === context.metadata.key && sourceMsg.data === message))
       return;
 
     console.log(message);
@@ -34,19 +37,19 @@ export class MsgNode {
       source: {
         appId: this.app.id,
         nodeId: this.config.nodeId,
-        context: context.source.context
+        headers: context.options.headers
       },
       appId: context.metadata.appId,
       key: context.metadata.key,
       data: message
     };
 
-    if (context.source.appId && context.source.nodeId) {
-      if (context.metadata.appId == context.source.appId) {
+    if (sourceMsg.source.appId && sourceMsg.source.nodeId) {
+      if (context.metadata.appId == sourceMsg.source.appId) {
         agentMsg.destination = {
-          appId: context.source.appId,
-          nodeId: context.source.nodeId,
-          context: context.source.context
+          appId: sourceMsg.source.appId,
+          nodeId: sourceMsg.source.nodeId,
+          headers: context.options.headers
         };
       }
     }
@@ -54,6 +57,8 @@ export class MsgNode {
     LoggerUtil.debug(`post message ${agentMsg.appId}.${agentMsg.key}`);
 
     this.queue.post(this.config.agentQueue, agentMsg);
+
+    context.end();
   }
 
   private onQueueConnect() {
@@ -62,10 +67,17 @@ export class MsgNode {
   }
 
   private onQueueMessage(msg: NodeMessage<any>) {
-    const context = new Context(this.app, msg.source);
-    context.external = true;
+    const result = this.app.emit(msg.key, msg.data, { headers: msg.source.headers || {} });
+    result.properties['sourceMsg'] = msg;
 
-    this.app.emit(msg.key, msg.data, context);
+    result.on('message', (msg) => {
+
+    });
+    result.on('close', () => {
+
+    });
+
+    result.execute();
   }
 
   run() {

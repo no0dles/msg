@@ -1,54 +1,78 @@
 import assert = require('assert');
 
 import { Context } from "./context";
-import { MessageSource } from "../models/message.source";
 
 describe('core.context', () => {
   describe('#emit', () => {
-    it('should use passed source', () => {
-      const source: MessageSource = { appId: 'foo', nodeId: 'bar' };
-      const context = new Context(null, source);
-      assert.equal(context.source.appId, source.appId);
-      assert.equal(context.source.nodeId, source.nodeId);
-    });
-
-    it('should initialize source.context', () => {
-      const context = new Context(null, {});
-      assert.notEqual(context.source.context, undefined);
-    });
-
-    it('should call app.emit', (done) => {
-      const app = {
+    it('should call handler.emit', (done) => {
+      const handler: any = {
         emit: () => {
           done();
         }
       };
-      const context = new Context(<any>app, {});
+      const context = new Context(handler, null, null);
       context.emit(null);
     });
 
     it('should pass data to app.emit', (done) => {
       const data = 'foobar';
-      const app = {
+      const handler: any = {
         emit: (emittedData) => {
           assert.equal(emittedData, data);
           done();
         }
       };
-      const context = new Context(<any>app, {});
+      const context = new Context(handler, null, null);
       context.emit(data);
     });
+  });
 
-    it('should create new context with external = false', (done) => {
-      const app = {
-        emit: (data, context: Context) => {
-          assert.equal(context.external, false);
+  describe('#end', () => {
+    it('should call handler.done', (done) => {
+      const handler: any = {
+        done: () => {
           done();
         }
       };
-      const context = new Context(<any>app, {});
-      context.external = true;
-      context.emit(null);
+      const context = new Context(handler, null, null);
+      context.end();
+    });
+
+    it('should call handler.done without error', (done) => {
+      const handler: any = {
+        done: (err) => {
+          assert.equal(err, undefined);
+          done();
+        }
+      };
+      const context = new Context(handler, null, null);
+      context.end();
+    });
+
+    it('should call handler.done with error', (done) => {
+      const error = new Error('test')
+      const handler: any = {
+        done: (err) => {
+          assert.equal(err, error);
+          done();
+        }
+      };
+      const context = new Context(handler, null, null);
+      context.end(error);
+    });
+
+    it('should call handler.emit with error', (done) => {
+      const message = 'foobar';
+      const handler: any = {
+        emit: (emittedMessage) => {
+          assert.equal(emittedMessage, emittedMessage);
+        },
+        done: () => {
+          done();
+        }
+      };
+      const context = new Context(handler, null, null);
+      context.end(message);
     });
   });
 });
