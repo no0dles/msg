@@ -35,6 +35,7 @@ export class Result extends EventEmitter {
 
     for(let app of this.handler.apps) {
       const result = app.emit(this.message, this.options);
+      result.properties = this.properties;
       result.on('message', (msg, options) => {
         this.emit('message', msg, options);
       });
@@ -47,7 +48,9 @@ export class Result extends EventEmitter {
       const handler: ContextHandler = {
         emit: (msg, options) => {
           this.emit('message', msg, options);
-          return this.handler.emit(msg, options);
+          const result = this.handler.emit(msg, options);
+          result.properties = this.properties;
+          return result;
         },
         done: (err) => {
           if(err) {
