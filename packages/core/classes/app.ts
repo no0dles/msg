@@ -41,7 +41,7 @@ export class App {
       listener = <any>typeOrListener;
     }
 
-    const metadata = Message.parse(messageType);
+    const metadata = Message.parse(messageType.prototype);
     if(!metadata)
       throw new Error(`missing message decorator for ${messageType}`);
 
@@ -56,7 +56,7 @@ export class App {
   public emit<TMessage>(keyOrData: string | TMessage, dataOrOptions?: TMessage | Options, options?: Options) {
     let metadata = this.getMetadata<Message>(keyOrData);
     if(!metadata)
-      throw new Error(`unknown message ${keyOrData}`);
+      throw new Error(`unknown message type ${keyOrData}`);
 
     let message: any;
     if(typeof keyOrData === "string") {

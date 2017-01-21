@@ -5,9 +5,9 @@ import { App, AppStart, AppStarted, AppStop, AppStopped } from "@msg/core";
 import { HttpRequest } from "./messages/http.request";
 import { HttpResponse } from "./messages/http.response";
 import { Server, IncomingMessage, ServerResponse } from "http";
-import { LoggerUtil } from "../node/utils/logger";
+import { LoggerUtil } from "@msg/node";
 
-const app = new App("http");
+export const app = new App("http");
 
 let server: Server;
 const responses: { [key: string]: ServerResponse; } = {};
@@ -25,6 +25,8 @@ app.on(AppStart, (message, context) => {
     req.httpVersion = request.httpVersion;
     req.httpVersionMajor = request.httpVersionMajor;
     req.httpVersionMinor = request.httpVersionMinor;
+
+    LoggerUtil.debug(`${req.method}: ${req.url}`);
 
     responses[ responseId ] = response;
 
@@ -51,7 +53,7 @@ app.on(AppStart, (message, context) => {
     if (err) {
       return console.error(err)
     }
-    LoggerUtil.info('http server started');
+    LoggerUtil.info(`http server listening on ${hostname}:${port}`);
     context.emit(new AppStarted());
   });
 
@@ -84,4 +86,4 @@ app.on(HttpResponse, (message, context) => {
   delete response[ responseId ];
 });
 
-export = app;
+//export = app;

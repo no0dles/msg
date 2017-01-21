@@ -3,26 +3,11 @@
   "description": "",
   "version": "0.0.2",
   "main": "index.js",
+  "module": "index.js",
   "typings": "index.d.ts",
   "bin": {
     "msgsched": "bin/cli.js"
   },
-  "homepage": "https://github.com/no0dles/msg",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/no0dles/msg.git"
-  },
-  "bugs": {
-    "url": "https://github.com/no0dles/msg/issues"
-  },
-  "author": "no0dles",
-  "license": "MIT",
-  "licenses": [
-    {
-      "type": "The MIT License",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
   "devDependencies": {
     "@types/node": "^6.0.59",
     "typescript": "^2.1.4"

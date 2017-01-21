@@ -9,7 +9,6 @@ import { RabbitQueue } from "../classes/rabbit.queue";
 import { AppUtil } from "../utils/app";
 import { LoggerUtil } from "../utils/logger";
 import { Config } from "../models/config";
-import { DecoratorUtil } from "@msg/core";
 
 const pkg = require('../package.json');
 

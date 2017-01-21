@@ -5,6 +5,9 @@ export class MsgAgent {
   constructor(private queue: Queue,
               private config: Config) {
     this.queue.on('message', msg => this.onMessage(msg));
+    this.queue.on('error', err => {
+      LoggerUtil.error(err.stack);
+    });
 
     LoggerUtil.debug(`register handles ${Object.keys(config.handles)}`);
   }

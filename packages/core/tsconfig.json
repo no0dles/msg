@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
@@ -8,10 +10,10 @@
     "stripInternal": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist",
+    "outDir": "../../dist/core",
     "typeRoots": ["node_modules/@types"]
   },
-  "exclude": [
-    "node_modules"
+  "files": [
+    "index.ts"
   ]
 }

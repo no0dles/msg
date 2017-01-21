@@ -11,6 +11,6 @@ export class AppUtil {
       throw new Error(`Could not find app ${appPath}`);
     }
 
-    return require(appPath) as App;
+    return require(appPath).app as App;
   }
 }

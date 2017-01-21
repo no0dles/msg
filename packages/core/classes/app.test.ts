@@ -42,7 +42,7 @@ describe('core.app', () => {
         assert.equal(emittedMsg, message);
         done();
       });
-      app.emit(message);
+      app.emit(message).execute();
     });
   });
 });

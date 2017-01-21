@@ -2,27 +2,9 @@
   "name": "@msg/http",
   "description": "",
   "version": "0.0.5",
-  "main": "index.js",
-  "typings": "index.d.ts",
-  "homepage": "https://github.com/no0dles/msg",
   "scripts": {
     "start": "node_modules/.bin/msgnode app.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/no0dles/msg.git"
-  },
-  "bugs": {
-    "url": "https://github.com/no0dles/msg/issues"
-  },
-  "author": "no0dles",
-  "license": "MIT",
-  "licenses": [
-    {
-      "type": "The MIT License",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
   "dependencies": {
     "@msg/core": "^0.0.17",
     "@msg/node": "0.0.15",

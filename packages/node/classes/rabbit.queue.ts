@@ -21,14 +21,16 @@ export class RabbitQueue extends EventEmitter implements Queue {
     const channelPromise = connectionPromise.then(connection => {
       this.connection = connection;
       this.connection.on('error', err => this.emit('error', err));
+      this.connection.on('close', err => this.close());
 
       return connection.createChannel()
     }).catch(err => {
-      console.log('conn err');
       this.emit('error', err);
     });
 
     channelPromise.then(channel => {
+      if(!channel) return;
+
       this.channel = channel;
       this.channel.on('error', err => this.emit('error', err));
 
@@ -47,7 +49,6 @@ export class RabbitQueue extends EventEmitter implements Queue {
 
       this.emit('connect');
     }).catch(err => {
-      console.log('conn err');
       this.emit('error', err);
     });
   }
@@ -57,7 +58,7 @@ export class RabbitQueue extends EventEmitter implements Queue {
 
     this.channel.close().then(() => {
       return this.connection.close();
-    });
+    }).then(() => this.emit('close'));
   }
 
   public post(queue: string, data: any) {

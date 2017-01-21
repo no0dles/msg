@@ -1,3 +1,7 @@
+export * from "./classes/app";
+export * from "./classes/context";
+export * from "./classes/handle";
+export * from "./classes/result";
 export * from "./models/listener";
 export * from "./decorators/message";
 export * from "./models/type";

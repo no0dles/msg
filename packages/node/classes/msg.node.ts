@@ -15,7 +15,14 @@ export class MsgNode extends EventEmitter {
     this.queue.on('connect', () => this.onQueueConnect());
     this.queue.on('message', msg => this.onQueueMessage(msg));
 
-    this.app.on(AppStopped, () => this.onAppStopped());
+    this.queue.on('error', (err) => {
+      LoggerUtil.error(err.stack);
+    });
+    this.queue.on('close', () => {
+      LoggerUtil.debug('queue closed');
+    });
+
+    //this.app.on(AppStopped, () => this.onAppStopped());
     this.app.on((message, context) => this.onAppMessage(message, context));
   }
 
@@ -63,7 +70,8 @@ export class MsgNode extends EventEmitter {
 
   private onQueueConnect() {
     LoggerUtil.debug('emit app start');
-    this.app.emit(new AppStart());
+    const result = this.app.emit(new AppStart());
+    result.execute();
   }
 
   private onQueueMessage(msg: NodeMessage<any>) {

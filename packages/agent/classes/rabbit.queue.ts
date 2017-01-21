@@ -17,6 +17,10 @@ export class RabbitQueue extends EventEmitter implements Queue {
     const connectionPromise = amqp.connect(this.config.queue);
     const channelPromise = connectionPromise.then(connection => {
       this.connection = connection;
+      this.connection.on('error', err => this.emit('error', err));
+      this.connection.on('close', () => {
+        LoggerUtil.debug('connection closed');
+      });
       return connection.createChannel()
     });
 
