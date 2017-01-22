@@ -2,17 +2,18 @@ import { Message } from "../decorators/message";
 import { Type } from "../models/type";
 import { Handle } from "./handle";
 import { Listener } from "../models/listener";
-import { Options } from "../models/options";
-import { InternalWildchard } from "../messages/internal.wildchard.message";
+import { AppEmitOptions } from "../models/app.emit.options";
+import { Wildchard } from "../messages/wildchard.message";
+import { ExecutionContext } from "./execution.context";
+import { ListenerHandle } from "./listener.handle";
 import { Result } from "./result";
 
 export class App {
-  public apps: App[] = [];
-  public handles: { [key: string]: Handle<any> } = {};
+  public contexts: { [key: string]: ExecutionContext } = {};
+  public apps: { [key: string]: App } = {};
+  public handles: { [key: string]: ListenerHandle<any> } = {};
 
-  constructor(public id: string) {
-
-  }
+  constructor(public id: string) { }
 
   public use(app: App) {
     for(let key in app.handles) {
@@ -25,25 +26,29 @@ export class App {
       }
     }
 
-    for(let subApp of app.apps) {
-      this.apps.push(subApp);
+    for(let key in app.apps) {
+      if(key in this.apps) {
+       this.apps[key].use(app.apps[key]);
+      } else {
+        this.apps[key] = app.apps[key];
+      }
     }
   }
 
   public on<TMessage>(listener: Listener<TMessage>)
   public on<TMessage>(type: Type<TMessage>, listener: Listener<TMessage>)
   public on<TMessage>(typeOrListener: Type<TMessage> | Listener<TMessage>, listener?: Listener<TMessage>) {
-    let messageType: Type<Message>;
     if(listener) {
-      messageType = <Type<TMessage>>typeOrListener;
+      this.register(<any>typeOrListener, listener);
     } else {
-      messageType = InternalWildchard;
-      listener = <any>typeOrListener;
+      this.register(Wildchard, <any>typeOrListener);
     }
+  }
 
-    const metadata = Message.parse(messageType.prototype);
+  private register<TMessage>(type: Type<TMessage>, listener: Listener<TMessage>) {
+    const metadata = Message.parse(type);
     if(!metadata)
-      throw new Error(`missing message decorator for ${messageType}`);
+      throw new Error(`missing message decorator for ${type}`);
 
     const handle = this.handles[metadata.key] || new Handle(metadata);
     handle.add(listener);
@@ -51,38 +56,30 @@ export class App {
     this.handles[metadata.key] = handle;
   }
 
-  public emit<TMessage>(key: string, data: TMessage, options?: Options)
-  public emit<TMessage>(data: TMessage, options?: Options)
-  public emit<TMessage>(keyOrData: string | TMessage, dataOrOptions?: TMessage | Options, options?: Options) {
-    let metadata = this.getMetadata<Message>(keyOrData);
-    if(!metadata)
-      throw new Error(`unknown message type ${keyOrData}`);
-
-    let message: any;
-    if(typeof keyOrData === "string") {
-      message = dataOrOptions;
-    } else {
-      message = keyOrData;
-      options = <any>dataOrOptions;
-    }
-
-    if(!options) {
-      options = { headers: {} };
-    }
-
-    return new Result(this, message, metadata, options);
-  }
-
-  private getMetadata<TMessage>(keyOrData: string | TMessage) {
+  public emit<TMessage>(key: string, data: TMessage, options?: AppEmitOptions): Result
+  public emit<TMessage>(data: TMessage, options?: AppEmitOptions): Result
+  public emit<TMessage>(keyOrData: string | TMessage, dataOrOptions?: TMessage | AppEmitOptions, options?: AppEmitOptions): Result {
     if(typeof keyOrData === "string") {
       const handle = this.handles[keyOrData];
-
       if(!handle)
-        return null;
+        throw new Error(`unknown message key ${keyOrData}`);
 
-      return handle.metadata;
+      return this.trigger(handle.metadata, dataOrOptions, options);
     } else {
-      return Message.parse(<any>keyOrData);
+      const metadata = Message.parse(<any>keyOrData.constructor);
+      if(!metadata)
+        throw new Error(`unknown message type ${keyOrData}`);
+
+      return this.trigger(metadata, keyOrData, dataOrOptions);
     }
+  }
+
+  private trigger(metadata: Message, message: any, options: AppEmitOptions): Result {
+    const context = new ExecutionContext(this, metadata, message);
+    this.contexts[context.id] = context;
+    context.on('close', () => {
+      delete this.contexts[context.id];
+    });
+    return context.run(options || {});
   }
 }

@@ -11,5 +11,5 @@ export * from "./messages/app.start.message";
 export * from "./messages/app.started.message";
 export * from "./messages/app.stop.message";
 export * from "./messages/app.stopped.message";
-export * from "./messages/internal.wildchard.message";
+export * from "./messages/wildchard.message";
 

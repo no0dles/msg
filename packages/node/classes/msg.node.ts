@@ -22,7 +22,7 @@ export class MsgNode extends EventEmitter {
       LoggerUtil.debug('queue closed');
     });
 
-    //this.app.on(AppStopped, () => this.onAppStopped());
+    this.app.on(AppStopped, () => this.onAppStopped());
     this.app.on((message, context) => this.onAppMessage(message, context));
   }
 
@@ -31,14 +31,15 @@ export class MsgNode extends EventEmitter {
   }
 
   private onAppMessage(message: Message, context: Context) {
+    console.log('on mess');
+
     const sourceMsg = context.properties['sourceMsg'] as NodeMessage<any>;
-    console.log(sourceMsg);
+    console.log("src", sourceMsg);
+    console.log("options", context);
+    console.log("src", context.metadata);
 
-    if (context.metadata.appId === "" || (sourceMsg.key === context.metadata.key && sourceMsg.data === message))
+    if (context.metadata.appId === "" || (sourceMsg && sourceMsg.key === context.metadata.key && sourceMsg.data === message))
       return;
-
-    console.log(message);
-    console.log(context);
 
     const agentMsg: AgentMessage<any> = {
       source: {
@@ -51,7 +52,7 @@ export class MsgNode extends EventEmitter {
       data: message
     };
 
-    if (sourceMsg.source.appId && sourceMsg.source.nodeId) {
+    if (sourceMsg && sourceMsg.source.appId && sourceMsg.source.nodeId) {
       if (context.metadata.appId == sourceMsg.source.appId) {
         agentMsg.destination = {
           appId: sourceMsg.source.appId,
@@ -62,7 +63,7 @@ export class MsgNode extends EventEmitter {
     }
 
     LoggerUtil.debug(`post message ${agentMsg.appId}.${agentMsg.key}`);
-
+    LoggerUtil.debug(JSON.stringify(agentMsg));
     this.queue.post(this.config.agentQueue, agentMsg);
 
     context.end();
@@ -76,7 +77,8 @@ export class MsgNode extends EventEmitter {
 
   private onQueueMessage(msg: NodeMessage<any>) {
     const result = this.app.emit(msg.key, msg.data, { headers: msg.source.headers || {} });
-    result.properties['sourceMsg'] = msg;
+
+    console.log("props", result.properties);
 
     result.on('message', (msg) => {
 

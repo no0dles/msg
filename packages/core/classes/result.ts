@@ -1,68 +1,76 @@
-import { EventEmitter } from "events";
-import { ResultHandler } from "../models/result.handler";
 import { Message } from "../decorators/message";
-import { Options } from "../models/options";
-import { Context } from "./context";
-import { Listener } from "../models/listener";
-import { ContextHandler } from "../models/context.handler";
+import { Type } from "../models/type";
+import { ResultHandler } from "../models/result.handler";
+import { ResultHandle } from "./result.handle";
+import { Wildchard } from "../messages/wildchard.message";
 
-export class Result extends EventEmitter {
-  public properties: { [key: string]: any; } = {};
+export class Result {
+  private messages: { [key: string]: any[] } = {};
+  private handles: ResultHandle[] = [];
 
   constructor(private handler: ResultHandler,
               public message: any,
-              public metadata: Message,
-              public options: Options) {
-    super();
+              public metadata: Message) {
+    this.handler.on('message', (message, metadata) => this.handleMessage(message, metadata));
+    this.handler.on('close', () => this.handleClose());
   }
 
-  public on(event: 'close', listener: () => void): this;
-  public on(event: 'message', listener: (msg: any, options?: Options) => void): this
-  public on(event: string | symbol, listener: Function): this {
-    return super.on(event, listener);
+  private handleMessage(message: any, metadata: Message) {
+    const messages = this.messages[metadata.key] || [];
+    messages.push(message);
+    this.messages[metadata.key] = messages;
+
+    for(let i = this.handles.length - 1; i >= 0; i--) {
+      const handle = this.handles[i];
+
+      if(handle.type !== 'first') continue;
+      if(!handle.matches(metadata.key)) continue;
+
+      handle.resolve(message);
+      this.handles.splice(i, 1);
+    }
   }
 
-  public async execute(): Promise<void> {
-    for(let key in this.handler.handles) {
-      const handle = this.handler.handles[key];
-      if(!handle.matches(this.metadata.key))
-        continue;
+  private handleClose() {
+    for(let handle of this.handles) {
+      if(handle.type === 'all') {
+        const messages = [];
+        for(let key in this.messages) {
+          if(!handle.matches(key)) continue;
+          messages.push(...this.messages[key]);
+        }
 
-      for(var listener of handle.listeners) {
-        await this.executeListener(listener);
+        handle.resolve(messages);
+      } else {
+        let message = null;
+        for(let key in this.messages) {
+          if(handle.matches(key)) continue;
+          message = this.messages[key][0];
+          break;
+        }
+
+        handle.resolve(message);
       }
     }
-
-    for(let app of this.handler.apps) {
-      const result = app.emit(this.message, this.options);
-      result.properties = this.properties;
-      result.on('message', (msg, options) => {
-        this.emit('message', msg, options);
-      });
-      await result.execute();
-    }
   }
 
-  private executeListener(listener: Listener<any>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      const handler: ContextHandler = {
-        emit: (msg, options) => {
-          this.emit('message', msg, options);
-          const result = this.handler.emit(msg, options);
-          result.properties = this.properties;
-          return result;
-        },
-        done: (err) => {
-          if(err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
-      };
+  public close(): void {
+    this.handler.close();
+  }
 
-      const context = new Context(handler, this.metadata, this.options);
-      listener(this.message, context);
-    });
+  public all<TMessage>(type?: Type<TMessage>): Promise<TMessage[]> {
+    return this.handle(type || Wildchard, 'all');
+  }
+
+  public first<TMessage>(type?: Type<TMessage>): Promise<TMessage> {
+    return this.handle(type || Wildchard, 'first');
+  }
+
+  private handle<TResult>(type: Type<any>, resolveType: 'all' | 'first'): Promise<TResult> {
+    const metadata = Message.parse(type);
+    const handle = new ResultHandle<TResult>(metadata, resolveType);
+    this.handles.push(handle);
+
+    return handle.promise;
   }
 }

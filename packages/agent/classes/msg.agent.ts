@@ -24,6 +24,8 @@ export class MsgAgent {
       data: msg.data
     };
 
+    console.log(msg);
+
     const appIds = this.config.handles[`${nodeMsg.appId}.${nodeMsg.key}`] || [];
 
     for(let appId of appIds) {
@@ -32,6 +34,7 @@ export class MsgAgent {
         queue = `${queue}.${msg.destination.nodeId}`;
       }
 
+      LoggerUtil.debug(`send message to ${queue}`);
       this.queue.post(queue, nodeMsg);
     }
   }

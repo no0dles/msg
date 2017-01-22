@@ -7,6 +7,6 @@ export class HttpRequest {
   httpVersionMinor: number;
   url: string;
   method: string;
-  headers: { [key:string]: string };
+  headers: { [key:string]: string } = {};
   body: string;
 }

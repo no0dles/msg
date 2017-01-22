@@ -1,32 +1,33 @@
 import { Message } from "../decorators/message";
-import { Options } from "../models/options";
 import { ContextHandler } from "../models/context.handler";
 import { Result } from "./result";
+import { ContextEmitOptions } from "../models/context.emit.options";
+import { AppEmitOptions } from "../models/app.emit.options";
 
 export class Context {
-  public properties: { [key: string]: any; } = {};
-
-  constructor(private handler: ContextHandler,
+  constructor(public id: string,
+              private handler: ContextHandler,
               public metadata: Message,
-              public options: Options) {
+              public options: ContextEmitOptions) {
 
   }
 
-  emit(message: any, options?: Options): Result {
-    return this.handler.emit(message, options);
+  public emit(message: any, options?: ContextEmitOptions): Result {
+    const appOptions: AppEmitOptions = { ...options, parentContextId: this.id };
+    return this.handler.emit(message, appOptions);
   }
 
-  end(): void
-  end(error: Error): void
-  end(message: any, options?: Options): void
-  end(errorOrMessage?: Error | any, options?: Options): void {
-    if(errorOrMessage instanceof Error) {
-      this.handler.done(errorOrMessage);
-    } else {
-      if(errorOrMessage)
-        this.handler.emit(errorOrMessage);
+  public end(): void
+  public end(error: Error): void
+  public end(message: any): void
+  public end(message: any, options: ContextEmitOptions): void
+  public end(errorOrMessage?: Error | any, options?: ContextEmitOptions): void {
+    if(errorOrMessage instanceof Error)
+      return this.handler.done(errorOrMessage);
 
-      this.handler.done();
-    }
+    if(errorOrMessage)
+      this.emit(errorOrMessage, options);
+
+    this.handler.done();
   }
 }

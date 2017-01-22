@@ -2,10 +2,14 @@ import { Decorator } from "../models/decorator";
 import { DecoratorUtil } from "../utils/decorator";
 
 export interface Message {
-  appId?: string;
-  key?: string;
+  key: string;
+  broadcast?: boolean;
 }
 
-export const Message: Decorator<Message> = DecoratorUtil.create("message", {
+export interface MessageDecorator extends Decorator<Message> {
+  metadata: Message;
+}
 
+export const Message = DecoratorUtil.class<Message, MessageDecorator>("metadata", {
+  broadcast: false
 });

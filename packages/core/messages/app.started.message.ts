@@ -1,6 +1,6 @@
 import { Message } from "../decorators/message";
 
-@Message({ appId: "", key: "app.started" })
+@Message({ key: "app.started" })
 export class AppStarted {
 
 }
