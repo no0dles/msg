@@ -1,7 +1,15 @@
 import { Decorator } from "../models/decorator";
 
 export class DecoratorUtil {
-  public static class<TValue, TDecorator extends Decorator<TValue>>(name: string, defaultValue: any): TDecorator {
+  public static property<TValue, TDecorator extends Decorator<TValue>>(name: string, defaultValue: TValue) {
+    return (value: TValue) => {
+      return (target: Object, propertyKey: string | symbol) => {
+
+      }
+    }
+  }
+
+  public static class<TValue, TDecorator extends Decorator<TValue>>(name: string, defaultValue: TValue): TDecorator {
     const fn: any = (value: TValue) => {
       return function(target: Function) {
         const original = target;

@@ -10,7 +10,7 @@ describe('core.context', () => {
           done();
         }
       };
-      const context = new Context(handler, null, null);
+      const context = new Context('id', handler, null, null);
       context.emit(null);
     });
 
@@ -22,7 +22,7 @@ describe('core.context', () => {
           done();
         }
       };
-      const context = new Context(handler, null, null);
+      const context = new Context('id', handler, null, null);
       context.emit(data);
     });
   });
@@ -34,7 +34,7 @@ describe('core.context', () => {
           done();
         }
       };
-      const context = new Context(handler, null, null);
+      const context = new Context('id', handler, null, null);
       context.end();
     });
 
@@ -45,7 +45,7 @@ describe('core.context', () => {
           done();
         }
       };
-      const context = new Context(handler, null, null);
+      const context = new Context('id', handler, null, null);
       context.end();
     });
 
@@ -57,7 +57,7 @@ describe('core.context', () => {
           done();
         }
       };
-      const context = new Context(handler, null, null);
+      const context = new Context('id', handler, null, null);
       context.end(error);
     });
 
@@ -71,7 +71,7 @@ describe('core.context', () => {
           done();
         }
       };
-      const context = new Context(handler, null, null);
+      const context = new Context('id', handler, null, null);
       context.end(message);
     });
   });

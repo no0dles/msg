@@ -16,22 +16,26 @@ export class App {
   constructor(public id: string) { }
 
   public use(app: App) {
-    for(let key in app.handles) {
-      if(key in this.handles) {
-        for(let listener of app.handles[key].listeners) {
-          this.handles[key].add(listener);
+    if(app.id in this.apps) {
+      for(let key in app.handles) {
+        if(key in this.apps[app.id].handles) {
+          for(let listener of app.handles[key].listeners) {
+            this.apps[app.id].handles[key].add(listener);
+          }
+        } else {
+          this.apps[app.id].handles[key] = app.handles[key];
         }
-      } else {
-        this.handles[key] = app.handles[key];
       }
-    }
 
-    for(let key in app.apps) {
-      if(key in this.apps) {
-       this.apps[key].use(app.apps[key]);
-      } else {
-        this.apps[key] = app.apps[key];
+      for(let key in app.apps) {
+        if(key in this.apps[app.id].apps) {
+          this.apps[app.id].apps[key].use(app.apps[key]);
+        } else {
+          this.apps[app.id].apps[key] = app.apps[key];
+        }
       }
+    } else {
+      this.apps[app.id] = app;
     }
   }
 
@@ -50,7 +54,7 @@ export class App {
     if(!metadata)
       throw new Error(`missing message decorator for ${type}`);
 
-    const handle = this.handles[metadata.key] || new Handle(metadata);
+    const handle = this.handles[metadata.key] || new ListenerHandle(metadata);
     handle.add(listener);
 
     this.handles[metadata.key] = handle;
@@ -75,6 +79,8 @@ export class App {
   }
 
   private trigger(metadata: Message, message: any, options: AppEmitOptions): Result {
+    console.log('app emit', metadata.key);
+
     const context = new ExecutionContext(this, metadata, message);
     this.contexts[context.id] = context;
     context.on('close', () => {

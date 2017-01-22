@@ -3,19 +3,31 @@ import { Type } from "../models/type";
 import { ResultHandler } from "../models/result.handler";
 import { ResultHandle } from "./result.handle";
 import { Wildchard } from "../messages/wildchard.message";
+import { EventEmitter } from "events";
 
-export class Result {
+export class Result extends EventEmitter {
   private messages: { [key: string]: any[] } = {};
-  private handles: ResultHandle[] = [];
+  private handles: ResultHandle<any>[] = [];
 
-  constructor(private handler: ResultHandler,
-              public message: any,
-              public metadata: Message) {
+  private closedCallback: () => void;
+  public closed: Promise<void> = new Promise<void>((resolve) => this.closedCallback = resolve);
+
+  constructor(private handler: ResultHandler) {
+    super();
+
     this.handler.on('message', (message, metadata) => this.handleMessage(message, metadata));
     this.handler.on('close', () => this.handleClose());
   }
 
+  public on(event: 'close', listener: () => void): this
+  public on(event: 'message', listener: (message: any, metadata: Message) => void): this
+  public on(event: string | symbol, listener: Function): this {
+    return super.on(event, listener);
+  }
+
   private handleMessage(message: any, metadata: Message) {
+    this.emit('message', message, metadata);
+
     const messages = this.messages[metadata.key] || [];
     messages.push(message);
     this.messages[metadata.key] = messages;
@@ -55,7 +67,9 @@ export class Result {
   }
 
   public close(): void {
+    this.emit('close');
     this.handler.close();
+    this.closedCallback();
   }
 
   public all<TMessage>(type?: Type<TMessage>): Promise<TMessage[]> {
