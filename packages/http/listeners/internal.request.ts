@@ -1,8 +1,8 @@
 import { InternalRequest } from "../messages/internal.request";
-import { Context } from "@msg/core";
+import { ListenerContext } from "@msg/core";
 import { HttpRequest } from "../messages/http.request";
 
-export = function (message: InternalRequest, context: Context) {
+export = function (message: InternalRequest, context: ListenerContext) {
   const chunks = [];
 
   message.request
@@ -20,6 +20,6 @@ export = function (message: InternalRequest, context: Context) {
       req.httpVersionMinor = message.request.httpVersionMinor;
       req.body = Buffer.concat(chunks).toString();
 
-      context.end(req, { expiration: 30 });
+      context.end(req, { timeout: 30 });
     });
 };

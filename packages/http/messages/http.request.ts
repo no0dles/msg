@@ -1,6 +1,6 @@
-import { Message } from "@msg/core";
+import { Message, Scope } from "@msg/core";
 
-@Message({ appId: 'http', key: "request" })
+@Message({ key: "http.request", scope: Scope.global })
 export class HttpRequest {
   httpVersion: string;
   httpVersionMajor: number;

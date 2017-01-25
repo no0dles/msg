@@ -20,13 +20,12 @@ export class MsgAgent {
     const nodeMsg : NodeMessage<any> = {
       key: msg.key,
       source: msg.source,
-      appId: msg.appId,
       data: msg.data
     };
 
-    console.log(msg);
+    console.log(msg.key);
 
-    const appIds = this.config.handles[`${nodeMsg.appId}.${nodeMsg.key}`] || [];
+    const appIds = this.config.handles[`${nodeMsg.key}`] || [];
 
     for(let appId of appIds) {
       let queue = `${this.config.nodeQueuePrefix}.${appId}`;

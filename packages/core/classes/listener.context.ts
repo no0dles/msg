@@ -1,9 +1,12 @@
+import uuid = require('uuid');
+
 import { EmitOptions } from "../models/emit.options";
 import { Metadata } from "../models/metadata";
 import { EmitContext } from "./emit.context";
 import { ListenerCallback } from "../models/listener.callback";
 
 export class ListenerContext {
+  public id: string = uuid.v1();
   private resolve: () => void;
   private reject: (err: Error) => void;
 

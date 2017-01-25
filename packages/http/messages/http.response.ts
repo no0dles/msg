@@ -1,6 +1,6 @@
-import { Message } from "@msg/core";
+import { Message, Scope } from "@msg/core";
 
-@Message({ appId: 'http', key: "response" })
+@Message({ key: "http.response", scope: Scope.global })
 export class HttpResponse {
   public headers: { [key:string]: string } = {};
   public statusCode: number = 200;

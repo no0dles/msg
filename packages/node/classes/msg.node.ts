@@ -1,6 +1,6 @@
 import { Config } from "../models/config";
 import { Queue } from "../models/queue";
-import { App, Message, AppStart, AppStopped, Context } from "@msg/core";
+import { App, AppStart, AppStopped, ListenerContext, Scope } from "@msg/core";
 import { NodeMessage } from "../models/node.message";
 import { AgentMessage } from "../models/agent.message";
 import { LoggerUtil } from "../utils/logger";
@@ -30,39 +30,30 @@ export class MsgNode extends EventEmitter {
     this.queue.close();
   }
 
-  private onAppMessage(message: Message, context: Context) {
-    console.log('on mess');
+  private onAppMessage(message: any, context: ListenerContext) {
+    console.log('on mess', context.metadata.key);
 
-    const sourceMsg = context.properties['sourceMsg'] as NodeMessage<any>;
-    console.log("src", sourceMsg);
-    console.log("options", context);
-    console.log("src", context.metadata);
+    if (context.metadata.scope === Scope.local)
+      return context.end();
 
-    if (context.metadata.appId === "" || (sourceMsg && sourceMsg.key === context.metadata.key && sourceMsg.data === message))
-      return;
 
     const agentMsg: AgentMessage<any> = {
       source: {
-        appId: this.app.id,
         nodeId: this.config.nodeId,
-        headers: context.options.headers
+        contextId: context.id
       },
-      appId: context.metadata.appId,
       key: context.metadata.key,
       data: message
     };
 
-    if (sourceMsg && sourceMsg.source.appId && sourceMsg.source.nodeId) {
-      if (context.metadata.appId == sourceMsg.source.appId) {
-        agentMsg.destination = {
-          appId: sourceMsg.source.appId,
-          nodeId: sourceMsg.source.nodeId,
-          headers: context.options.headers
-        };
-      }
+    if (context.options.context && context.options.context.id && context.options.context.nodeId) {
+      agentMsg.destination = {
+        contextId: context.options.context.id,
+        nodeId: context.options.context.nodeId
+      };
     }
 
-    LoggerUtil.debug(`post message ${agentMsg.appId}.${agentMsg.key}`);
+    LoggerUtil.debug(`post message ${agentMsg.key}`);
     LoggerUtil.debug(JSON.stringify(agentMsg));
     this.queue.post(this.config.agentQueue, agentMsg);
 
@@ -71,23 +62,18 @@ export class MsgNode extends EventEmitter {
 
   private onQueueConnect() {
     LoggerUtil.debug('emit app start');
-    const result = this.app.emit(new AppStart());
-    result.execute();
+    this.app.emit(new AppStart());
   }
 
-  private onQueueMessage(msg: NodeMessage<any>) {
-    const result = this.app.emit(msg.key, msg.data, { headers: msg.source.headers || {} });
-
-    console.log("props", result.properties);
-
-    result.on('message', (msg) => {
-
+  private async onQueueMessage(msg: NodeMessage<any>) {
+    console.log('queue', msg);
+    this.app.emit(msg.key, msg.data, {
+      scope: Scope.local,
+      context: {
+        id: msg.source.contextId,
+        nodeId: msg.source.nodeId
+      }
     });
-    result.on('close', () => {
-
-    });
-
-    result.execute();
   }
 
   run() {

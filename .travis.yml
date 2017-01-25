@@ -8,9 +8,9 @@ before_install:
 install:
   - npm install
   - gulp install
+  - gulp link
 
 script:
-  - gulp build
   - gulp test
 
 notifications:

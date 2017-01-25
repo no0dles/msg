@@ -7,7 +7,7 @@ module.exports = function (package) {
 
     },
     fn: function () {
-      return spawn.run(package, 'npm', ['install']);
+      return spawn.run(package, 'node_modules/.bin/tsc', ['-w'])
     }
   };
 };

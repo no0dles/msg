@@ -1,11 +1,11 @@
-import { AppStart, AppStopped, Context } from "@msg/core";
+import { AppStart, AppStopped, ListenerContext } from "@msg/core";
 import { HttpServer } from "../classes/http.server";
 import { InternalRequest } from "../messages/internal.request";
 import { HttpResponse } from "../messages/http.response";
 
 
 export = function (server: HttpServer) {
-  return (message: AppStart, context: Context) => {
+  return (message: AppStart, context: ListenerContext) => {
     server.on('request', async(request, response) => {
       const internal = new InternalRequest();
       internal.request = request;

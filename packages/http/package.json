@@ -2,12 +2,8 @@
   "name": "@msg/http",
   "description": "",
   "version": "0.0.5",
-  "scripts": {
-    "start": "node_modules/.bin/msgnode app.js"
-  },
   "dependencies": {
     "@msg/core": "^0.0.17",
-    "@msg/node": "0.0.15",
     "es6-promise": "^4.0.5",
     "uuid": "^3.0.1"
   },

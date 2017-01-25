@@ -1,8 +1,8 @@
-import { AppStop, Context } from "@msg/core";
+import { AppStop, ListenerContext } from "@msg/core";
 import { HttpServer } from "../classes/http.server";
 
 export = function(server: HttpServer) {
-  return (message: AppStop, context: Context) => {
+  return (message: AppStop, context: ListenerContext) => {
     server.close();
   };
 };

@@ -4,6 +4,17 @@ const packagesPath = path.join(__dirname, '..', 'packages');
 const buildPath = path.join(__dirname, '..', 'dist');
 
 const names = ['core', 'agent', 'node', 'http', 'scheduler'];
+const dependencies = {
+  'core': [],
+  'node': ['core'],
+  'agent': ['core', 'node'],
+  'http': ['core'],
+  'scheduler': []
+};
+
+module.exports.getDependency = function (package) {
+  return dependencies[package];
+};
 
 module.exports.getPath = function (package) {
   return path.join(packagesPath, package);

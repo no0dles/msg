@@ -1,5 +1,4 @@
 export interface MessageDestination {
-  appId: string;
+  contextId: string;
   nodeId: string;
-  headers: {[key: string]: any};
 }

@@ -1,7 +1,3 @@
-import { DecoratorUtil } from "@msg/core";
+import { PropertyDecoratorUtil } from "@msg/core";
 
-export interface Required {
-
-}
-
-export const Required = DecoratorUtil.property<Required>("required", {});
+export const Required = PropertyDecoratorUtil.create("required");

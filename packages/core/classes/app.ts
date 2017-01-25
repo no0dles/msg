@@ -29,10 +29,11 @@ export class App {
   public emit<TMessage>(key: string, data: TMessage, options?: EmitOptions): EmitContext
   public emit<TMessage>(data: TMessage, options?: EmitOptions): EmitContext
   public emit<TMessage>(keyOrData: string | TMessage, dataOrOptions?: TMessage | EmitOptions, options?: EmitOptions): EmitContext {
+    const routing = this.router.get(keyOrData);
     if(typeof keyOrData === "string") {
-      return new EmitContext(this.router, dataOrOptions, options || {});
+      return new EmitContext(this.router, routing, dataOrOptions, options || {});
     } else {
-      return new EmitContext(this.router, keyOrData, dataOrOptions || {});
+      return new EmitContext(this.router, routing, keyOrData, dataOrOptions || {});
     }
   }
 }

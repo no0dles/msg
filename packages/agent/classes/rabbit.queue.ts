@@ -36,7 +36,7 @@ export class RabbitQueue extends EventEmitter implements Queue {
         const content = msg.content.toString();
         const agentMsg = JSON.parse(content) as AgentMessage<any>;
 
-        LoggerUtil.debug(`received message from ${agentMsg.source.appId}.${agentMsg.source.nodeId}`);
+        LoggerUtil.debug(`received message from ${agentMsg.source.nodeId}`);
         //LoggerUtil.debug(content);
 
         this.emit('message', agentMsg);

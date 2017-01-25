@@ -9,24 +9,23 @@ import { MessageResolver } from "./message.resolver";
 import { MetadataUtil } from "../utils/metadata";
 
 export class EmitContext {
-  private routing: Routing;
   private execution: ExecutionHandler;
   private contextClosed: Promise<void>;
   private resolvers: Resolver<any>[] = [];
 
   constructor(private router: Router,
+              public routing: Routing,
               public message: any,
               public options: EmitOptions) {
-    this.routing = this.router.get(message);
     this.execution = new ExecutionHandler(this.routing.listeners, (message, options) => {
-      const metadata = MetadataUtil.resolveInstance(message);
+      const routing = this.router.get(message);
       for(let resolver of this.resolvers)
-        resolver.add(message, metadata);
+        resolver.add(message, routing.metadata);
 
-      return new EmitContext(this.router, message, options);
+      return new EmitContext(this.router, routing, message, options);
     });
 
-    this.contextClosed = this.execution.run(this.routing.metadata, message, options);
+    this.contextClosed = this.execution.run(this.routing.metadata, this.message, this.options);
     this.contextClosed = this.contextClosed.then(() => {
       for(let resolver of this.resolvers)
         resolver.end();
