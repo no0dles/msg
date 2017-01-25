@@ -1,3 +1,6 @@
+import { Scope } from "./scope";
+
 export interface ListenerOptions {
-  broadcast?: boolean;
+  scope?: Scope;
+  timeout?: number;
 }

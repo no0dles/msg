@@ -1,15 +1,16 @@
-import { Decorator } from "../models/decorator";
-import { DecoratorUtil } from "../utils/decorator";
+import { Scope } from "../models/scope";
+import { ClassDecoratorUtil } from "../utils/class.decorator";
 
 export interface Message {
   key: string;
-  broadcast?: boolean;
+  persistent?: boolean;
+  timeout?: number;
+  scope?: Scope;
 }
 
-export interface MessageDecorator extends Decorator<Message> {
-  metadata: Message;
-}
-
-export const Message = DecoratorUtil.class<Message, MessageDecorator>("metadata", {
-  broadcast: false
+export const Message = ClassDecoratorUtil.create<Message>("message", {
+  key: undefined,
+  persistent: false,
+  timeout: 0,
+  scope: Scope.local
 });

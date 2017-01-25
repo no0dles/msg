@@ -1,5 +1,5 @@
-import { Context } from "../classes/context";
+import { ListenerContext } from "../classes/listener.context";
 
 export interface Listener<TMessage> {
-  (msg: TMessage, cxt: Context): void;
+  (message: TMessage, context: ListenerContext): void;
 }
