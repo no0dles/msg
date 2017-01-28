@@ -1,31 +1,25 @@
 import assert = require('assert');
 
 import { Router } from "./router";
-import { Message } from "../decorators/message";
+import { Metadata } from "../models/metadata";
 
 describe('core.router', () => {
 
   describe('#add', () => {
     it('should add route', () => {
-      @Message({ key: 'test' })
-      class Test { }
-
-      const router = new Router();
-      router.add(Test, []);
+      const router = new Router<Metadata>(null);
+      router.add({ properties: {} }, []);
       assert.equal(router.routes.length, 1);
     });
   });
 
-  describe('#merge', () => {
+  describe('#use', () => {
     it('should copy routes', () => {
-      @Message({ key: 'test' })
-      class Test { }
+      const router1 = new Router<Metadata>(null);
+      const router2 = new Router<Metadata>(null);
 
-      const router1 = new Router();
-      const router2 = new Router();
-
-      router1.add(Test, []);
-      router2.merge(router1);
+      router1.add({ properties: {} }, []);
+      router2.use(router1);
 
       assert.equal(router1.routes.length, 1);
       assert.equal(router2.routes.length, 1);
@@ -34,30 +28,20 @@ describe('core.router', () => {
 
   describe('#get', () => {
     it('should get single listener', () => {
-      @Message({ key: 'test' })
-      class Test { }
+      const router = new Router<Metadata>({ matches: () => true });
+      router.add({}, [() => {}]);
 
-      const router = new Router();
-      router.add(Test, [() => {}]);
-      const routing = router.get(new Test());
-
-      assert.notEqual(routing.metadata, null);
-      assert.notEqual(routing.metadata, undefined);
-      assert.equal(routing.listeners.length, 1);
+      const listeners = router.resolve({});
+      assert.equal(listeners.length, 1);
     });
 
     it('should get multiple listener', () => {
-      @Message({ key: 'test' })
-      class Test { }
+      const router = new Router({ matches: () => true });
+      router.add({}, [() => {}]);
+      router.add({}, [() => {}]);
 
-      const router = new Router();
-      router.add(Test, [() => {}]);
-      router.add(Test, [() => {}]);
-      const routing = router.get(new Test());
-
-      assert.notEqual(routing.metadata, null);
-      assert.notEqual(routing.metadata, undefined);
-      assert.equal(routing.listeners.length, 2);
+      const listeners = router.resolve({});
+      assert.equal(listeners.length, 2);
     });
   });
 });

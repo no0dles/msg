@@ -31,7 +31,7 @@ export class MsgNode extends EventEmitter {
   }
 
   private onAppMessage(message: any, context: ListenerContext) {
-    console.log('on mess', context.metadata.key);
+    //console.log('on mess', context.metadata.key);
 
     if (context.metadata.scope === Scope.local)
       return context.end();
@@ -54,7 +54,7 @@ export class MsgNode extends EventEmitter {
     }
 
     LoggerUtil.debug(`post message ${agentMsg.key}`);
-    LoggerUtil.debug(JSON.stringify(agentMsg));
+    //LoggerUtil.debug(JSON.stringify(agentMsg));
     this.queue.post(this.config.agentQueue, agentMsg);
 
     context.end();
@@ -66,14 +66,17 @@ export class MsgNode extends EventEmitter {
   }
 
   private async onQueueMessage(msg: NodeMessage<any>) {
-    console.log('queue', msg);
-    this.app.emit(msg.key, msg.data, {
-      scope: Scope.local,
-      context: {
-        id: msg.source.contextId,
-        nodeId: msg.source.nodeId
-      }
-    });
+    try {
+      this.app.emit(msg.key, msg.data, {
+        scope: Scope.local,
+        context: {
+          id: msg.source.contextId,
+          nodeId: msg.source.nodeId
+        }
+      });
+    } catch (err) {
+      LoggerUtil.error(err);
+    }
   }
 
   run() {

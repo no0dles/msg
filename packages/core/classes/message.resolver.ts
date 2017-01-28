@@ -1,15 +1,17 @@
-import { Resolver } from "../models/resolver";
-import { Metadata } from "../models/metadata";
+import { Resolver } from "./resolver";
+import { Routing } from "../models/routing";
+import { EmittedMessage } from "../models/emitted.message";
 
-export class MessageResolver<T> extends Resolver<T> {
-  constructor(private metadata: Metadata) {
+export class MessageResolver<T, TMetadata> extends Resolver<EmittedMessage<T, TMetadata>, TMetadata> {
+  constructor(private metadata: TMetadata,
+              private routing: Routing<TMetadata>) {
     super();
     this.value = null;
   }
 
-  add(value: any, metadata: Metadata): void {
-    if(!this.metadata || this.metadata.key === metadata.key) {
-      this.value = value;
+  add(message: EmittedMessage<T, TMetadata>): void {
+    if(this.routing.matches(this.metadata, message.metadata)) {
+      this.value = message;
       this.end();
     }
   }

@@ -2,52 +2,31 @@ import { Route } from "./route";
 import { Listener } from "../models/listener";
 import { Routing } from "../models/routing";
 import { Metadata } from "../models/metadata";
-import { Type } from "../models/type";
-import { MetadataUtil } from "../utils/metadata";
 
-export class Router {
-  private metadata: { [key: string]: Metadata } = {};
-  public routes: Route[] = [];
+export class Router<TMetadata extends Metadata> {
+  public routes: Route<TMetadata>[] = [];
 
-  merge(router: Router) {
+  constructor(public routing: Routing<TMetadata>) { }
+
+  use(router: Router<TMetadata>): void {
     for(let route of router.routes) {
       this.routes.push(route);
     }
   }
 
-  add(type: Type<any>, listeners: Listener<any>[]): void {
-    const metadata = MetadataUtil.resolveType(type);
-    if(!metadata)
-      throw new Error(`could not find metadata for ${type}`);
-
-    this.metadata[metadata.key] = metadata;
-    this.routes.push(new Route(metadata, listeners));
+  add(metadata: TMetadata, listeners: Listener<any, TMetadata>[]): void {
+    this.routes.push(new Route(this.routing, metadata, listeners));
   }
 
-  get(key: string): Routing
-  get(message: any): Routing
-  get(keyOrMessage: any | string): Routing {
-    let metadata: Metadata;
-    if(typeof keyOrMessage === "string") {
-      metadata = this.metadata[keyOrMessage];
-    } else {
-      metadata = MetadataUtil.resolveInstance(keyOrMessage);
-    }
-
-    if(!metadata)
-      throw new Error(`could not find metadata for ${keyOrMessage}`);
-
-    const listeners = [];
+  resolve(metadata: TMetadata): Listener<any, TMetadata>[] {
+    const listeners: Listener<any, TMetadata>[] = [];
     for(let route of this.routes) {
-      if(!route.matches(metadata.key))
+      if(!route.matches(metadata))
         continue;
 
       listeners.push(...route.listeners);
     }
 
-    return {
-      metadata: metadata,
-      listeners: listeners
-    };
+    return listeners;
   }
 }

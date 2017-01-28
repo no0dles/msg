@@ -1,12 +1,10 @@
 import uuid = require('uuid');
 
-import { EmitOptions } from "../models/emit.options";
-import { Metadata } from "../models/metadata";
 import { EmitContext } from "./emit.context";
 import { ListenerCallback } from "../models/listener.callback";
+import { Metadata } from "../models/metadata";
 
-export class ListenerContext {
-  public id: string = uuid.v1();
+export class ListenerContext<TMetadata extends Metadata> {
   private resolve: () => void;
   private reject: (err: Error) => void;
 
@@ -15,24 +13,23 @@ export class ListenerContext {
     this.reject = reject
   });
 
-  constructor(private callback: ListenerCallback,
-              public metadata: Metadata,
-              public options: EmitOptions) { }
+  constructor(private callback: ListenerCallback<TMetadata>,
+              public metadata: TMetadata) { }
 
-  public emit(message: any, options?: EmitOptions): EmitContext {
-    return this.callback(message, options || {});
+  public emit(message: any, metadata?: TMetadata): EmitContext<TMetadata> {
+    return this.callback(message, metadata);
   }
 
   public end(): void
   public end(error: Error): void
   public end(message: any): void
-  public end(message: any, options: EmitOptions): void
-  public end(errorOrMessage?: Error | any, options?: EmitOptions): void {
+  public end(message: any, metadata: TMetadata): void
+  public end(errorOrMessage?: Error | any, metadata?: TMetadata): void {
     if(errorOrMessage instanceof Error)
       return this.reject(errorOrMessage);
 
     if(errorOrMessage)
-      this.emit(errorOrMessage, options);
+      this.emit(errorOrMessage, metadata);
 
     this.resolve();
   }

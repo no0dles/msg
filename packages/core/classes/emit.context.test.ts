@@ -1,5 +1,5 @@
 import assert = require('assert');
 
-describe('core.utils.metadata', () => {
+describe('core.emit.context', () => {
 
 });

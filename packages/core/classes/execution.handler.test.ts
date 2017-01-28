@@ -1,12 +1,13 @@
 import assert = require('assert');
 
 import { ExecutionHandler } from "./execution.handler";
+import { Metadata } from "../models/metadata";
 
 describe('core.execution.handler', () => {
   describe('#run', () => {
     it('should end promise for no listeners', (done) => {
-      const handler = new ExecutionHandler([], null);
-      handler.run(null, null, null).then(() => {
+      const handler = new ExecutionHandler<Metadata>([], null);
+      handler.run(null, null).then(() => {
         done();
       });
     });
@@ -15,7 +16,7 @@ describe('core.execution.handler', () => {
       const handler = new ExecutionHandler([() => {
         done();
       }], null);
-      handler.run(<any>{}, null, {});
+      handler.run({}, {});
     });
 
     it('should run listeners in order', (done) => {
@@ -24,7 +25,7 @@ describe('core.execution.handler', () => {
       const listener2 = (msg, cxt) => { count++; cxt.end() };
 
       const handler = new ExecutionHandler([listener1, listener2], null);
-      handler.run(<any>{}, null, {}).then(() => {
+      handler.run({}, {}).then(() => {
         done();
       });
     });

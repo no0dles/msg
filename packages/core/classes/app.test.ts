@@ -1,32 +1,24 @@
 import assert = require('assert');
 
 import { App } from "./app";
-import { Message } from "../decorators/message";
-import { AppStart } from "../messages/app.start.message";
-import { AppStop } from "../messages/app.stop.message";
+import { Metadata } from "../models/metadata";
 
 describe('core.app', () => {
   describe('#on', () => {
-    it('should throw error for missing message decorator', (done) => {
+    it('should allow type', () => {
       class NonMessage { }
-
-      const app = new App('test');
-      try {
-        app.on(NonMessage, () => { });
-      } catch(err) {
-        done();
-      }
+      const app = new App<Metadata>(null);
+      app.on(NonMessage, () => { });
     });
   });
 
   describe('#emit', () => {
     it('should emit message', (done) => {
-      @Message({ key: 'message' })
-      class TestMessage { }
-
-      const message = new TestMessage();
-      const app = new App('test');
-      app.on(TestMessage, (emittedMsg) => {
+      const message = {};
+      const app = new App<Metadata>({
+        matches: () => true
+      });
+      app.on({ }, (emittedMsg) => {
         assert.equal(emittedMsg, message);
         done();
       });
@@ -34,79 +26,61 @@ describe('core.app', () => {
     });
 
     it('should emit message to sub app', (done) => {
-      @Message({ key: 'message' })
-      class TestMessage { }
+      const message = {};
+      const subApp = new App({
+        matches: () => true
+      });
 
-      const message = new TestMessage();
-      const subApp = new App('test.sub');
-
-      subApp.on(TestMessage, (emittedMsg) => {
+      subApp.on({}, (emittedMsg) => {
         assert.equal(emittedMsg, message);
         done();
       });
 
-      const app = new App('test');
+      const app = new App(null);
       app.use(subApp);
       app.emit(message);
     });
 
     it('should wait for first response message', (done) => {
-      @Message({ key: 'trigger' })
-      class TriggerMessage { }
-
-      @Message({ key: 'req' })
-      class ReqMessage { }
-
-      @Message({ key: 'res' })
-      class ResMessage { }
-
-      const app = new App('test');
-
-      app.on(ReqMessage, (req, cxt) => {
-        cxt.end(new ResMessage());
+      const app = new App({
+        matches: (source, target) => source["key"] === target["key"]
       });
 
-      app.on(TriggerMessage, async(trigger, cxt) => {
-        const result = cxt.emit(new ReqMessage());
-        const res = await result.first(ResMessage);
+      app.on({ key: "req" }, (req, cxt) => {
+        cxt.end({}, { key: "res"});
+      });
+
+      app.on({ key: "trigger" }, async(trigger, cxt) => {
+        const result = cxt.emit({}, { key: "req" });
+        const res = await result.first({ key: "res" });
         assert.notEqual(res, null);
         assert.notEqual(res, undefined);
         done();
       });
-
-      const message = new TriggerMessage();
-      app.emit(message);
+      app.emit({}, { key: "trigger" });
     });
 
     it('should wait for all response messages', (done) => {
-      @Message({ key: 'trigger' })
-      class TriggerMessage { }
+      const app = new App({
+        matches: (source, target) => source["key"] === target["key"]
+      });
 
-      @Message({ key: 'req' })
-      class ReqMessage { }
-
-      @Message({ key: 'res' })
-      class ResMessage { }
-
-      const app = new App('test');
-
-      app.on(ReqMessage, (req, cxt) => {
-        cxt.emit(new ResMessage());
-        cxt.emit(new ResMessage());
+      app.on({ key: "req" }, (req, cxt) => {
+        cxt.emit({}, { key: "res" });
+        cxt.emit({}, { key: "res" });
         cxt.end();
       });
 
-      app.on(TriggerMessage, async(trigger, cxt) => {
-        const result = cxt.emit(new ReqMessage());
-        const res = await result.all(ResMessage);
+      app.on({ key: "trigger"}, async(trigger, cxt) => {
+        const result = cxt.emit({}, { key: "req" });
+        const res = await result.all({ key: "res" });
         assert.notEqual(res, null);
         assert.notEqual(res, undefined);
         assert.equal(res.length, 2);
         done();
       });
 
-      const message = new TriggerMessage();
-      app.emit(message);
+      app.emit({}, { key: "trigger" });
     });
   });
 });

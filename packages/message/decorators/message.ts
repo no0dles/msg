@@ -1,5 +1,4 @@
-import { Scope } from "../models/scope";
-import { ClassDecoratorUtil } from "../utils/class.decorator";
+/*import { Scope } from "../models/scope";
 
 export interface Message {
   key: string;
@@ -14,3 +13,4 @@ export const Message = ClassDecoratorUtil.create<Message>("message", {
   timeout: 0,
   scope: Scope.local
 });
+*/

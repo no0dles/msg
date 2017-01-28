@@ -5,21 +5,13 @@ import { Route } from "./route";
 describe('core.route', () => {
   describe('#matches', () => {
     it('should be true for same value', () => {
-      const value = 'foo';
-      const handle = new Route(<any>{ key: value }, []);
-      assert.equal(handle.matches(value), true);
+      const handle = new Route({ matches: () => true }, {}, []);
+      assert.equal(handle.matches({}), true);
     });
 
     it('should be false for other value', () => {
-      const value = 'foo';
-      const handle = new Route(<any>{ key: value }, []);
-      assert.equal(handle.matches('bar'), false);
-    });
-
-    it('should be true for *', () => {
-      const value = '*';
-      const handle = new Route(<any>{ key: value }, []);
-      assert.equal(handle.matches('foobar'), true);
+      const handle = new Route({ matches: () => false }, {}, []);
+      assert.equal(handle.matches({}), false);
     });
   });
 });

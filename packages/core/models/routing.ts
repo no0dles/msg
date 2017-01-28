@@ -1,7 +1,3 @@
-import { Metadata } from "./metadata";
-import { Listener } from "./listener";
-
-export interface Routing {
-  metadata: Metadata;
-  listeners: Listener<any>[];
+export interface Routing<TMetadata> {
+  matches(source: TMetadata, target: TMetadata): boolean;
 }

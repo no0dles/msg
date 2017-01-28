@@ -1,28 +1,23 @@
 import { Listener } from "../models/listener";
 import { ListenerCallback } from "../models/listener.callback";
-import { Metadata } from "../models/metadata";
 import { ListenerContext } from "./listener.context";
-import { EmitOptions } from "../models/emit.options";
+import { Metadata } from "../models/metadata";
 
-export class ExecutionHandler {
-  constructor(private listeners: Listener<any>[],
-              private callback: ListenerCallback){
+export class ExecutionHandler<TMetadata extends Metadata> {
+  constructor(private listeners: Listener<any, TMetadata>[],
+              private callback: ListenerCallback<TMetadata>){ }
 
-  }
-
-  public run(metadata: Metadata, message: any, options: EmitOptions): Promise<void> {
+  public run(message: any, metadata: TMetadata): Promise<void> {
     let promise = Promise.resolve<void>();
     for(let listener of this.listeners) {
       promise = promise.then(() => {
-        const listenerOptions = {
-          persistent: metadata.persistent,
-          scope: metadata.scope,
-          timeout: metadata.timeout,
-          ...options
-        };
-        const context = new ListenerContext(this.callback, metadata, listenerOptions);
+        const context = new ListenerContext<TMetadata>(this.callback, metadata);
+        const result = listener(message, context);
 
-        listener(message, context);
+        if(result instanceof Promise) {
+          return result.then(() => context.closed);
+        }
+
         return context.closed;
       });
     }

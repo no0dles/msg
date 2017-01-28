@@ -1,16 +1,16 @@
-export class ClassDecoratorUtil {
-  private static Key = 'design:class';
+import { MetadataUtil } from "./metadata";
+import { PropertyDecoratorUtil } from "./property.decorator";
 
+export class ClassDecoratorUtil {
   public static create<TValue>(name: string, defaultValue?: TValue): any {
+    if(name === PropertyDecoratorUtil.Key)
+      throw new Error(`decorator name '${name}' is reserved`);
+    
     return (value?: TValue) => {
       return (target: Function) => {
         const original = target;
-        const classes = target.constructor[ClassDecoratorUtil.Key] || {};
 
-        let cls = classes[name] || {};
-        cls = { ...cls, ...<any>defaultValue, ...<any>value };
-        classes[name] = cls;
-        original[ClassDecoratorUtil.Key] = classes;
+        MetadataUtil.set(original, name, value, defaultValue);
 
         function construct(constructor, args) {
           const c : any = function () {
@@ -27,16 +27,7 @@ export class ClassDecoratorUtil {
         f.prototype = original.prototype;
 
         return f;
-
       };
     };
-  }
-
-  public static resolveInstance(target: any) {
-    return target.constructor[ClassDecoratorUtil.Key];
-  }
-
-  public static resolveType(target: any) {
-    return target.prototype.constructor[ClassDecoratorUtil.Key];
   }
 }

@@ -1,6 +1,8 @@
 import assert = require('assert');
 
 import { ListenerContext } from "./listener.context";
+import { Metadata } from "../models/metadata";
+import { EmitContext } from "./emit.context";
 
 describe('core.listener.context', () => {
   describe('#emit', () => {
@@ -8,7 +10,7 @@ describe('core.listener.context', () => {
       const callback: any = () => {
         done();
       };
-      const context = new ListenerContext(callback, null, null);
+      const context = new ListenerContext<Metadata>(callback, {});
       context.emit(null);
     });
 
@@ -18,14 +20,14 @@ describe('core.listener.context', () => {
         assert.equal(emittedData, data);
         done();
       };
-      const context = new ListenerContext(callback, null, null);
+      const context = new ListenerContext<Metadata>(callback, {});
       context.emit(data);
     });
   });
 
   describe('#end', () => {
     it('should end promise', (done) => {
-      const context = new ListenerContext(null, null, null);
+      const context = new ListenerContext<Metadata>(null, {});
       context.end();
       context.closed.then(() => {
         done();
@@ -33,7 +35,7 @@ describe('core.listener.context', () => {
     });
 
     it('should end promise without error', (done) => {
-      const context = new ListenerContext(null, null, null);
+      const context = new ListenerContext<Metadata>(null, {});
       context.end();
       context.closed.then(err => {
         assert.equal(err, undefined);
@@ -43,7 +45,7 @@ describe('core.listener.context', () => {
 
     it('should end promise with error', (done) => {
       const error = new Error('test');
-      const context = new ListenerContext(null, null, null);
+      const context = new ListenerContext<Metadata>(null, {});
       context.end(error);
       context.closed.catch(err => {
         assert.equal(err, error);
@@ -53,10 +55,11 @@ describe('core.listener.context', () => {
 
     it('should call callback before ending promise', (done) => {
       const message = 'foobar';
-      const callback: any = (emittedMessage) => {
+      const callback = (emittedMessage): EmitContext<Metadata> => {
         assert.equal(emittedMessage, emittedMessage);
+        return null;
       };
-      const context = new ListenerContext(callback, null, null);
+      const context = new ListenerContext<Metadata>(callback, {});
       context.end(message);
       context.closed.then(() => {
         done();
