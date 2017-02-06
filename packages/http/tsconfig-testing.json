@@ -11,9 +11,15 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "outDir": "../../dist/http",
+    "lib": ["es2015"],
+    "paths": {
+      "@msg/core": ["../../dist/core"],
+      "@msg/node": ["../../dist/node"]
+    },
     "typeRoots": ["node_modules/@types"]
   },
   "files": [
+    "app.ts",
     "index.ts",
     "testing.ts"
   ]

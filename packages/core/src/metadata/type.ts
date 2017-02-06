@@ -1,4 +1,4 @@
 export interface Type<T> {
-  name: string;
+  name?: string;
   new(): T;
 }

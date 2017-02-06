@@ -1,13 +1,22 @@
-
 const bump = require('gulp-bump');
+const packages = require("./packages");
+const spawn = require('./spawn');
+const path = require('path');
 
-function bumpPackage(package) {
-  return function() {
-    var packagePath = path.join(packagesPath, package);
-    var packageFile = path.join(packagePath, 'package.json');
+module.exports = function (package, gulp) {
+  const packagePath = packages.getPath(package);
 
-    gulp.src(packageFile)
-      .pipe(bump())
-      .pipe(gulp.dest(packagePath));
-  }
-}
+  return {
+    deps: [],
+    init: function () { },
+    fn: function () {
+      return function () {
+        const packageFile = path.join(packagePath, 'package.json');
+
+        gulp.src(packageFile)
+          .pipe(bump())
+          .pipe(gulp.dest(packagePath));
+      }
+    }
+  };
+};

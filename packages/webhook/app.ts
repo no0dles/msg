@@ -2,7 +2,7 @@ import { App, ListenerContext } from "@msg/core";
 import { HttpRequest } from "@msg/http";
 import { WebhookRequest } from "./messages/webhook.request";
 import { WebhookResponse } from "./messages/webhook.response";
-import { HttpResponse } from "../http/messages/http.response";
+import { HttpResponse } from "../http/src/messages/http.response";
 import { WebhookOptions } from "./models/webhook.options";
 
 export = function(messages: any[], options?: WebhookOptions) {

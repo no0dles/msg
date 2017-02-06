@@ -24,40 +24,36 @@ export class App<TMetadata extends Metadata> {
     this.router.use(app.router);
   }
 
-  public on<TMessage>(type: Type<TMessage>, listener: Listener<TMessage, TMetadata>): void
-  public on<TMessage>(type: Type<TMessage>, handle: Type<Handle<TMessage, TMetadata>>): void
-  public on<TMessage>(type: Type<TMessage>, metadata: TMetadata, listener: Listener<TMessage, TMetadata>): void
-  public on<TMessage>(type: Type<TMessage>, metadata: TMetadata, handle: Type<Handle<TMessage, TMetadata>>): void
-  public on<TMessage>(metadata: TMetadata, listener: Listener<TMessage, TMetadata>): void
-  public on<TMessage>(metadata: TMetadata, handle: Type<Handle<TMessage, TMetadata>>): void
-  public on<TMessage>(typeOrMetadata: any, listenerOrHandleOrMetadata?: any, listenerOrHandle?: any): void {
-    if(typeOrMetadata.prototype && listenerOrHandle && listenerOrHandle.prototype instanceof Handle) {
-      const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata, listenerOrHandleOrMetadata);
-      this.router.add(metadata, () => this.services.resolve<any>(listenerOrHandle));
-    } else if(typeOrMetadata.prototype && listenerOrHandle && !(listenerOrHandle.prototype instanceof Handle)) {
-      const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata, listenerOrHandleOrMetadata);
-      this.router.add(metadata, () => new ListenerHandle(listenerOrHandle));
-    } else if(typeOrMetadata.prototype && !listenerOrHandle && listenerOrHandleOrMetadata.prototype instanceof Handle) {
+  public listen<TMessage>(metadata: TMetadata, listener: Listener<TMessage, TMetadata>): void
+  public listen<TMessage>(type: Type<TMessage>, listener: Listener<TMessage, TMetadata>): void
+  public listen<TMessage>(typeOrMetadata: any, listener: Listener<TMessage, TMetadata>): void {
+    if (typeOrMetadata.prototype) {
       const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata);
-      this.router.add(metadata, () => this.services.resolve<any>(listenerOrHandleOrMetadata));
-    } else if(typeOrMetadata.prototype && !listenerOrHandle && !(listenerOrHandleOrMetadata.prototype instanceof Handle)) {
+      this.router.add(metadata, () => new ListenerHandle(listener));
+    } else {
+      this.router.add(typeOrMetadata, () => new ListenerHandle(listener));
+    }
+  }
+
+  public handle<TMessage>(metadata: TMetadata, handle: Type<Handle<TMessage, TMetadata>>): void
+  public handle<TMessage>(type: Type<TMessage>, handle: Type<Handle<TMessage, TMetadata>>): void
+  public handle<TMessage>(typeOrMetadata: any, handle: Type<Handle<TMessage, TMetadata>>): void {
+    if (typeOrMetadata.prototype) {
       const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata);
-      this.router.add(metadata, () => new ListenerHandle(listenerOrHandleOrMetadata));
-    } else if(!typeOrMetadata.prototype && listenerOrHandleOrMetadata.prototype instanceof Handle) {
-      this.router.add(typeOrMetadata, () => this.services.resolve<any>(listenerOrHandleOrMetadata));
-    } else if(!typeOrMetadata.prototype && !(listenerOrHandleOrMetadata.prototype instanceof Handle)) {
-      this.router.add(typeOrMetadata, () => new ListenerHandle(listenerOrHandleOrMetadata));
+      this.router.add(metadata, () => this.services.resolve<any>(handle));
+    } else {
+      this.router.add(typeOrMetadata, () => this.services.resolve<any>(handle));
     }
   }
 
   public emit<TMessage>(data: TMessage, metadata?: TMetadata): EmitContext<TMetadata> {
     const resolvedMetadata = MetadataUtil.resolveInstance<TMetadata>(data, metadata);
-    if(resolvedMetadata.contextId) {
+    if (resolvedMetadata.contextId) {
       const emittedMessage = { data: data, metadata: resolvedMetadata };
 
-      const parentContext = this.contexts[resolvedMetadata.contextId];
-      if(parentContext) {
-        for(let resolver of parentContext.resolvers)
+      const parentContext = this.contexts[ resolvedMetadata.contextId ];
+      if (parentContext) {
+        for (let resolver of parentContext.resolvers)
           resolver.add(emittedMessage);
       }
     }
@@ -70,9 +66,9 @@ export class App<TMetadata extends Metadata> {
     };
     const context = new EmitContext<TMetadata>(callback, this.router.routing, routes, data, resolvedMetadata);
 
-    this.contexts[context.id] = context;
+    this.contexts[ context.id ] = context;
     context.closed.then(() => {
-      delete this.contexts[context.id];
+      delete this.contexts[ context.id ];
     });
 
     return context;

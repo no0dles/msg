@@ -1,7 +1,7 @@
 import webHookBuilder = require('./app');
 
 import { App } from "@msg/core";
-import { Message } from "../message/decorators/message";
+import { Message } from "../message/src/decorators/message";
 import { Webhook } from "./decorators/webhook";
 import { WebhookOptions } from "./models/webhook.options";
 

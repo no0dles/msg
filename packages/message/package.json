@@ -1,0 +1,13 @@
+{
+  "name": "@msg/message",
+  "description": "",
+  "version": "0.0.2",
+  "dependencies": {
+    "@msg/core": "^0.0.17"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.37",
+    "@types/node": "^6.0.59",
+    "typescript": "^2.1.4"
+  }
+}

@@ -3,12 +3,13 @@ const path = require('path');
 const packagesPath = path.join(__dirname, '..', 'packages');
 const buildPath = path.join(__dirname, '..', 'dist');
 
-const names = ['core', 'agent', 'node', 'http', 'scheduler', 'webhook'];
+const names = ['core', 'message', 'node', 'http', 'agent', 'scheduler', 'webhook'];
 const dependencies = {
   'core': [],
-  'node': ['core'],
+  'message': ['core'],
+  'node': ['core', 'message'],
+  'http': ['core', 'message', 'node'],
   'agent': ['core', 'node'],
-  'http': ['core'],
   'scheduler': [],
   'webhook': ['core', 'http']
 };
