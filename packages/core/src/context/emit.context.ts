@@ -1,42 +1,46 @@
 import uuid = require('uuid');
 
-import { Type } from "../models/type";
-import { ExecutionHandler } from "./execution.handler";
-import { Resolver } from "./resolver";
-import { MessagesResolver } from "./messages.resolver";
-import { MessageResolver } from "./message.resolver";
-import { MetadataUtil } from "../utils/metadata";
-import { App } from "./app";
-import { Listener } from "../models/listener";
-import { Routing } from "../models/routing";
-import { Metadata } from "../models/metadata";
-import { EmittedMessage } from "../models/emitted.message";
+import { ExecutionHandler } from "../execution/execution.handler";
+import { Resolver } from "../resolvers/resolver";
+import { MessagesResolver } from "../resolvers/messages.resolver";
+import { MessageResolver } from "../resolvers/message.resolver";
+import { Routing } from "../routing/routing";
+import { EmittedMessage } from "../resolvers/emitted.message";
+import { EmitContextCallback } from "./emit.context.callback";
+import { Type } from "../metadata/type";
+import { Metadata } from "../decorators/metadata";
+import { Route } from "../routing/route";
+import { MetadataUtil } from "../metadata/metadata";
 
 export class EmitContext<TMetadata extends Metadata> {
-  private execution: ExecutionHandler<TMetadata>;
+  private execution: Promise<void>;
   private contextClosed: Promise<void>;
 
   public id: string = uuid.v1();
   public resolvers: Resolver<any, TMetadata>[] = [];
 
-  constructor(private app: App<TMetadata>,
-              public listeners: Listener<any, TMetadata>[],
+  constructor(private callback: EmitContextCallback<TMetadata>,
+              private routing: Routing<TMetadata>,
+              private routes: Route<TMetadata>[],
               public message: any,
               public metadata: TMetadata) {
-    this.execution = new ExecutionHandler<TMetadata>(this.listeners, (message: any, metadata: TMetadata) => {
-      const resolvedMetadata = MetadataUtil.resolveInstance<TMetadata>(message, metadata);
-      resolvedMetadata.contextId = this.id;
-      return this.app.emit(message, resolvedMetadata);
+    const executionHandler = new ExecutionHandler<TMetadata>(this.routes, (message: any, metadata: TMetadata) => {
+      metadata.contextId = this.id;
+      return this.callback.emit(message, metadata);
     });
 
-    this.contextClosed = this.execution.run(this.message, this.metadata);
-    this.contextClosed = this.contextClosed.then(() => {
+    this.execution = executionHandler.run(this.message, this.metadata);
+    this.contextClosed = this.execution.then(() => {
       for(let resolver of this.resolvers)
         resolver.end();
     }).catch(err => {
       for(let resolver of this.resolvers)
         resolver.end(err);
     });
+  }
+
+  public get promise(): Promise<void> {
+    return this.execution;
   }
 
   public get closed(): Promise<void> {
@@ -47,7 +51,7 @@ export class EmitContext<TMetadata extends Metadata> {
   public first<TMessage>(metadata?: TMetadata, routing?: Routing<TMetadata>): Promise<EmittedMessage<TMessage, TMetadata>>
   public first<TMessage>(typeOrMetadata?: any, routing?: Routing<TMetadata>): Promise<EmittedMessage<TMessage, TMetadata>> {
     const metadata = typeOrMetadata.prototype ? MetadataUtil.resolveType(typeOrMetadata) : typeOrMetadata;
-    let resolver = new MessageResolver<TMessage, TMetadata>(metadata, routing || this.app.router.routing);
+    let resolver = new MessageResolver<TMessage, TMetadata>(metadata, routing || this.routing);
     this.resolvers.push(resolver);
     return resolver.promise;
   }
@@ -55,8 +59,8 @@ export class EmitContext<TMetadata extends Metadata> {
   public all<TMessage>(type?: Type<TMessage>, routing?: Routing<TMetadata>): Promise<EmittedMessage<TMessage, TMetadata>[]>
   public all<TMessage>(metadata?: TMetadata, routing?: Routing<TMetadata>): Promise<EmittedMessage<TMessage, TMetadata>[]>
   public all<TMessage>(typeOrMetadata?: any, routing?: Routing<TMetadata>): Promise<EmittedMessage<TMessage, TMetadata>[]> {
-    const metadata = typeOrMetadata.prototype ? MetadataUtil.resolveType(typeOrMetadata): typeOrMetadata;
-    let resolver = new MessagesResolver<TMessage, TMetadata>(metadata, routing || this.app.router.routing);
+    const metadata = typeOrMetadata.prototype ? MetadataUtil.resolveType(typeOrMetadata) : typeOrMetadata;
+    let resolver = new MessagesResolver<TMessage, TMetadata>(metadata, routing || this.routing);
     this.resolvers.push(resolver);
     return resolver.promise;
   }

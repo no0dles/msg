@@ -1,24 +1,28 @@
-import { Metadata } from "../models/metadata";
-import { Type } from "../models/type";
+import { Type } from "./type";
+import { Metadata } from "../decorators/metadata";
 
 export class MetadataUtil {
-  private static Key = 'design:metadata';
+  public static Key = 'design:metadata';
 
   public static set(target: any, key: string, value: any, defaultValue?: any) {
-    var metadata = target[MetadataUtil.Key] || {};
+    let baseMetadata = target[MetadataUtil.Key] || {};
+    let parts = key.split('.').filter(p => p.length !== 0);
 
-    var parts = key.split('.');
-    var obj = metadata;
-    for(let i = 0; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if(!obj[part]) {
-        obj[part] = {};
+    let metadata = {};
+    let valueObj = metadata;
+    if(parts.length > 0) {
+      for(let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+        valueObj[part] = {};
+        valueObj = valueObj[part];
       }
-      obj = obj[part];
+      const valueKey = parts[parts.length - 1];
+      valueObj[valueKey] = value || defaultValue;
+    } else {
+      metadata = value || defaultValue;
     }
 
-    obj[parts[parts.length - 1]] = value || defaultValue;
-    target[MetadataUtil.Key] = metadata;
+    target[MetadataUtil.Key] = { ...baseMetadata, ...metadata };
   }
 
   public static resolve<TMetadata extends Metadata>(target: any, extension?: TMetadata) {

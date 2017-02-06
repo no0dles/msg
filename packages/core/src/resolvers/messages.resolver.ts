@@ -1,6 +1,6 @@
 import { Resolver } from "./resolver";
-import { Routing } from "../models/routing";
-import { EmittedMessage } from "../models/emitted.message";
+import { Routing } from "../routing/routing";
+import { EmittedMessage } from "./emitted.message";
 
 export class MessagesResolver<T, TMetadata> extends Resolver<EmittedMessage<T, TMetadata>[], TMetadata> {
   constructor(private metadata: TMetadata,

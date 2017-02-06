@@ -1,7 +1,9 @@
 import assert = require('assert');
 
 import { ExecutionHandler } from "./execution.handler";
-import { Metadata } from "../models/metadata";
+import { Metadata } from "../decorators/metadata";
+import { Route } from "../routing/route";
+import { ListenerHandle } from "./listener.handle";
 
 describe('core.execution.handler', () => {
   describe('#run', () => {
@@ -13,9 +15,10 @@ describe('core.execution.handler', () => {
     });
 
     it('should execute listener', (done) => {
-      const handler = new ExecutionHandler([() => {
+      const route = new Route(null, {}, () => new ListenerHandle(() => {
         done();
-      }], null);
+      }));
+      const handler = new ExecutionHandler([route], null);
       handler.run({}, {});
     });
 
@@ -24,7 +27,10 @@ describe('core.execution.handler', () => {
       const listener1 = (msg, cxt) => { setTimeout(() => { assert.equal(count, 0); cxt.end() }, 100) };
       const listener2 = (msg, cxt) => { count++; cxt.end() };
 
-      const handler = new ExecutionHandler([listener1, listener2], null);
+      const handler = new ExecutionHandler([
+        new Route(null, {}, () => new ListenerHandle(listener1)),
+        new Route(null, {}, () => new ListenerHandle(listener2))
+      ], null);
       handler.run({}, {}).then(() => {
         done();
       });
