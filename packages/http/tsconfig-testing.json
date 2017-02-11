@@ -14,12 +14,12 @@
     "lib": ["es2015"],
     "paths": {
       "@msg/core": ["../../dist/core"],
+      "@msg/message": ["../../dist/message"],
       "@msg/node": ["../../dist/node"]
     },
     "typeRoots": ["node_modules/@types"]
   },
   "files": [
-    "app.ts",
     "index.ts",
     "testing.ts"
   ]

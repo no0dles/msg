@@ -13,7 +13,8 @@
     "outDir": "../../dist/node",
     "lib": ["es2015"],
     "paths": {
-      "@msg/core": ["../../dist/core"]
+      "@msg/core": ["../../dist/core"],
+      "@msg/message": ["../../dist/message"]
     },
     "typeRoots": ["node_modules/@types"]
   },

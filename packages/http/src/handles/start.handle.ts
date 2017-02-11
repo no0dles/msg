@@ -25,8 +25,10 @@ export class StartHandle extends MessageHandle<AppStart> {
     });
 
     this.http.on('close', (err) => {
+      console.error(err);
+
       const msg = new AppStopped();
-      msg.error = err;
+      msg.code = 1;
       context.end(msg);
     });
 

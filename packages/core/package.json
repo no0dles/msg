@@ -1,7 +1,7 @@
 {
   "name": "@msg/core",
   "description": "",
-  "version": "0.0.17",
+  "version": "0.0.32",
   "dependencies": {
     "uuid": "^3.0.1"
   },

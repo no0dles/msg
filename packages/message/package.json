@@ -1,9 +1,9 @@
 {
   "name": "@msg/message",
   "description": "",
-  "version": "0.0.2",
+  "version": "0.0.32",
   "dependencies": {
-    "@msg/core": "^0.0.17"
+    "@msg/core": "0.0.32"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.37",

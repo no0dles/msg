@@ -7,3 +7,5 @@ export * from "./src/handles/stop.handle";
 export * from "./src/handles/parse.request.handle";
 
 export * from "./src/services/http.service";
+
+export const app = require('./src/app');

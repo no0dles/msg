@@ -11,6 +11,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "outDir": "../../dist/validator",
+    "lib": ["es2015"],
     "paths": {
       "@msg/core": ["../../dist/core"]
     },

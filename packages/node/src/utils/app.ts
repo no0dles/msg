@@ -1,44 +1,49 @@
 import path = require("path");
 import fs = require("fs");
 
-import { MessageApp, Wildchard } from "@msg/message";
-import { AppStopped } from "../messages/app.stopped.message";
+import { MessageApp } from "@msg/message";
 import { AppStart } from "../messages/app.start.message";
 import { AppStop } from "../messages/app.stop.message";
+import { AppModel } from "../config/app.model";
+
 
 export class AppUtil {
-  public static load(file: string): MessageApp {
-    const appPath = path.join(process.cwd(), file);
+  public static load(model: AppModel): MessageApp {
+    let appPath: string;
+    let exportName: string;
+
+    if(model.file) {
+      appPath = path.join(process.cwd(), model.file);
+    } else if(model.module) {
+      appPath = path.join(process.cwd(), 'node_modules', model.module);
+    } else {
+      throw new Error("missing file or module");
+    }
+
+
+    if(appPath.indexOf("#") !== -1) {
+      exportName = appPath.substr(appPath.indexOf("#") + 1);
+      appPath = appPath.substr(0, appPath.indexOf("#"));
+    }
 
     if(!fs.existsSync(appPath)) {
       throw new Error(`Could not find app ${appPath}`);
     }
 
-    const app = require(appPath) as MessageApp;
+    const module = require(appPath);
+    let app: MessageApp;
+
+    if(exportName) {
+      app = module[exportName];
+    } else {
+      app = module;
+    }
 
     if(!(app instanceof MessageApp)) {
       throw new Error("app is not of type MessageApp");
     }
 
     return app;
-  }
-
-  public static wrap(app: MessageApp) {
-    const root = new MessageApp();
-
-    root.listen(Wildchard, (message, context) => {
-      console.info(`emitted ${context.metadata.key}`)
-      console.dir(message);
-      context.end();
-    });
-
-    root.listen(AppStopped, (message, context) => {
-      process.exit(message.error ? 1 : 0);
-    });
-
-    root.use(app);
-
-    return root;
   }
 
   public static run(app: MessageApp) {

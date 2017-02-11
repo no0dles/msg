@@ -1,7 +1,9 @@
-import { App } from "@msg/core";
+import { MessageApp, Wildchard } from "@msg/message";
 
-import validationListener = require('./listeners/validation');
+import { ValidatorHandle } from "./src/handles/validator.handle";
 
-export const app = new App('validator');
+const app = new MessageApp();
 
-app.on((msg, cxt) => validationListener(msg, cxt));
+app.handle(Wildchard, ValidatorHandle);
+
+export = app;

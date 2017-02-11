@@ -3,9 +3,9 @@ import { AppStart } from "../messages/app.start.message";
 
 const app = new MessageApp();
 
-app.listen(AppStart, (message, context) => {
+app.listen(AppStart, async(message, context) => {
   console.log('started');
-  context.emit({ foo: 2, bar: 'lorem' }, { key: "trigger" });
+  await context.emit({ foo: 2, bar: 'lorem' }, { key: "trigger" }).promise;
   context.end();
 });
 

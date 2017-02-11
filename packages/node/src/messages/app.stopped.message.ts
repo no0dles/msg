@@ -2,5 +2,5 @@ import { Message } from "@msg/message";
 
 @Message({ key: "app.stopped" })
 export class AppStopped {
-  public error?: Error;
+  public code?: number;
 }

@@ -1,0 +1,11 @@
+env:
+  NODE_ENV: development
+  MONGODB_URL: mongodb://localhost
+
+apps:
+  logging:
+    module: @msg/logging
+  http:
+    module: @msg/http#app
+  custom:
+    file: ../../custom/app.js

@@ -1,4 +1,5 @@
 import minimist = require('minimist');
+import path = require('path');
 import { CliOptions } from "../cli/cli.options";
 
 export class CliUtil {
@@ -11,16 +12,10 @@ export class CliUtil {
       },
       default: {
         log: 'info',
-        config: '.node.yml'
+        config: path.join(process.cwd(), '.node.yml')
       }
     };
 
-    const args = minimist<CliOptions>(process.argv, options);
-
-    if(args._.length !== 3) {
-      throw new Error("missing app file");
-    }
-
-    return args;
+    return minimist<CliOptions>(process.argv, options);
   }
 }

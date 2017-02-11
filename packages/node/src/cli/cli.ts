@@ -1,27 +1,37 @@
 #! /usr/bin/env node
 
 import { AppUtil } from "../utils/app";
-import { LoggingUtil } from "../utils/logging";
 import { CliUtil } from "../utils/cli";
 import { EnvironmentUtil } from "../utils/environment";
 import { ConfigUtil } from "../utils/config";
+import { MessageApp } from "@msg/message";
+import { AppStopped } from "../messages/app.stopped.message";
 
 try {
   const args = CliUtil.parse();
+  const config = ConfigUtil.load(args.config);
 
-  ConfigUtil.set(args.config);
-  LoggingUtil.set(args.log);
-  EnvironmentUtil.set(args.env);
+  EnvironmentUtil.init(config.env, args.env);
 
-  var app = AppUtil.load(args._[2]);
+  const root = new MessageApp();
 
-  if(args.log !== "none") {
-    app = AppUtil.wrap(app);
+  for (let i = 2; i < args._.length; i++) {
+    root.use(AppUtil.load({ file: args._[i] }));
   }
 
-  AppUtil.run(app).catch(err => {
+  for(let key in config.apps) {
+    root.use(AppUtil.load(config.apps[key]));
+  }
+
+  root.listen(AppStopped, (message) => {
+    process.exit(message.code || 0);
+  });
+
+  AppUtil.run(root).catch(err => {
     console.error(err.message);
+    process.exit(1);
   });
 } catch (err) {
   console.error(err.message);
+  process.exit(1);
 }

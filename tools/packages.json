@@ -1,0 +1,22 @@
+[
+  {
+    "name": "core",
+    "dependencies": []
+  },
+  {
+    "name": "message",
+    "dependencies": ["core"]
+  },
+  {
+    "name": "node",
+    "dependencies": ["core", "message"]
+  },
+  {
+    "name": "validator",
+    "dependencies": ["core", "message"]
+  },
+  {
+    "name": "http",
+    "dependencies": ["core", "message", "node"]
+  }
+]
