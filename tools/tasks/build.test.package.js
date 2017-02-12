@@ -6,7 +6,7 @@ module.exports = function (gulp, package) {
     stdio: 'inherit'
   };
 
-  gulp.task('build:test:' + package.name, [], function (done) {
+  gulp.task('build:test:' + package.name, ['build:npm:' + package.name], function (done) {
     spawn('node_modules/.bin/tsc', ['-p', 'tsconfig-testing.json'], options)
       .on('close', done);
   });

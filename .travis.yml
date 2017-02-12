@@ -7,10 +7,12 @@ before_install:
 
 install:
   - npm install
-  - gulp install:build
 
 script:
-  - gulp test
+  - gulp install:source
+  - gulp build:test
+  - gulp install:build
+  - gulp run:test
 
 notifications:
   email: false
