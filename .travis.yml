@@ -7,7 +7,7 @@ before_install:
 
 install:
   - npm install
-  - gulp install
+  - gulp install:build
 
 script:
   - gulp test

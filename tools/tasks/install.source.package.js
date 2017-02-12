@@ -6,7 +6,7 @@ module.exports = function (gulp, package) {
     stdio: 'inherit'
   };
 
-  gulp.task('installSource:source:' + package.name, [], function (done) {
+  gulp.task('install:source:' + package.name, [], function (done) {
     spawn('npm', ['install'], options)
       .on('close', done);
   });
