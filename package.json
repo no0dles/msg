@@ -2,28 +2,9 @@
   "name": "msg",
   "description": "",
   "version": "0.0.0",
-  "main": "index.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
   "scripts": {
     "build": "gulp build"
   },
-  "homepage": "https://github.com/no0dles/msg",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/no0dles/msg.git"
-  },
-  "bugs": {
-    "url": "https://github.com/no0dles/msg/issues"
-  },
-  "author": "no0dles",
-  "license": "MIT",
-  "licenses": [
-    {
-      "type": "The MIT License",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-bump": "^2.5.1",

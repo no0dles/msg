@@ -6,6 +6,8 @@ export * from "./src/decorators/max";
 export * from "./src/decorators/expression";
 export * from "./src/decorators/types";
 
+export * from "./src/handles/length.handle";
+
 const app = require("./app");
 /*
 export class Test {

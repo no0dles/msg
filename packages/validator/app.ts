@@ -1,9 +1,9 @@
 import { MessageApp, Wildchard } from "@msg/message";
 
-import { ValidatorHandle } from "./src/handles/validator.handle";
+import { LengthHandle } from "./src/handles/length.handle";
 
 const app = new MessageApp();
 
-app.handle(Wildchard, ValidatorHandle);
+app.handle(Wildchard, LengthHandle);
 
 export = app;

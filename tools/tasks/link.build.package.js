@@ -2,12 +2,12 @@ const spawn = require('child_process').spawn;
 
 module.exports = function (gulp, package) {
   const options = {
-    cwd: package.sourcePath,
+    cwd: package.buildPath,
     stdio: 'inherit'
   };
 
-  gulp.task('install:source:' + package.name, [], function (done) {
-    spawn('npm', ['install'], options)
+  gulp.task('link:build:' + package.name, [], function (done) {
+    spawn('npm', ['link'], options)
       .on('close', done);
   });
 };

@@ -1,11 +1,11 @@
 import { MetadataUtil } from "./metadata";
-import { PropertyDecoratorUtil } from "./property.decorator";
+import { PropertyDecoratorUtil } from "./property.decorator.util";
 
 export class ClassDecoratorUtil {
   public static create<TValue>(name: string, defaultValue?: TValue): (value?: TValue) => Function {
     if(name === PropertyDecoratorUtil.Key)
       throw new Error(`decorator name '${name}' is reserved`);
-    
+
     return (value?: TValue) => {
       return (target: Function) => {
         const original = target;

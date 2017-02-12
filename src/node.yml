@@ -1,1 +1,9 @@
-queue: amqp://localhost
+webview:
+  module: @msg/node-webview
+  env:
+    port: 5000
+
+bridge:
+  module: @msg/bridge-rabbit
+  env:
+    queue: amqp://localhost

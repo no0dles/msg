@@ -1,3 +1,3 @@
-import { PropertyDecoratorUtil } from "@msg/core";
+import { PropertyDecoratorUtil, PropertyDecorator } from "@msg/core";
 
-export const Number = PropertyDecoratorUtil.create("number");
+export const Number: PropertyDecorator<{}> = PropertyDecoratorUtil.create("number");

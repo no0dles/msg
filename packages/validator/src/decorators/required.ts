@@ -1,3 +1,3 @@
-import { PropertyDecoratorUtil } from "@msg/core";
+import { PropertyDecoratorUtil, PropertyDecorator } from "@msg/core";
 
-export const Required = PropertyDecoratorUtil.create("required");
+export const Required: PropertyDecorator<{}> = PropertyDecoratorUtil.create("required");

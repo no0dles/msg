@@ -2,7 +2,7 @@ const mocha = require('gulp-mocha');
 const path = require('path');
 
 module.exports = function (gulp, package) {
-  gulp.task('test:' + package.name, function () {
+  gulp.task('run:test:' + package.name, function () {
     var testFiles = path.join(package.buildPath, '**/*.test.js');
     var npmDir = path.join(package.buildPath, 'node_modules/**/*.js');
 

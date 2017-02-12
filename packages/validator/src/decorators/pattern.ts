@@ -1,3 +1,3 @@
-import { PropertyDecoratorUtil } from "@msg/core";
+import { PropertyDecoratorUtil, PropertyDecorator } from "@msg/core";
 
-export const Pattern = PropertyDecoratorUtil.create<RegExp>("pattern", null);
+export const Pattern: PropertyDecorator<RegExp> = PropertyDecoratorUtil.create<RegExp>("pattern", null);

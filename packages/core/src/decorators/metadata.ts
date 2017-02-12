@@ -1,5 +1,5 @@
 import { PropertyMetadata } from "../metadata/property.metadata";
-import { ClassDecoratorUtil } from "../metadata/class.decorator";
+import { ClassDecoratorUtil } from "../metadata/class.decorator.util";
 
 export interface Metadata {
   contextId?: string;

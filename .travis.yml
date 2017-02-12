@@ -2,16 +2,22 @@ language: node_js
 node_js:
   - "6"
 
+matrix:
+  include:
+  - env: PACKAGE=core
+  - env: PACKAGE=message
+  - env: PACKAGE=node
+  - env: PACKAGE=validator
+
 before_install:
-  - npm install -g gulp
+  - npm installSource -g gulp
 
 install:
-  - npm install
-  - gulp install
+  - npm installSource
+  - gulp installSource
 
 script:
-  - gulp build
-  - gulp test
+  - gulp test:$PACKAGE
 
 notifications:
   email: false

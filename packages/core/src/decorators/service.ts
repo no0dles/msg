@@ -1,5 +1,5 @@
 import { DependencyScope } from "../dependency/dependency.scope";
-import { ClassDecoratorUtil } from "../metadata/class.decorator";
+import { ClassDecoratorUtil } from "../metadata/class.decorator.util";
 
 export interface Service {
   scope: DependencyScope;

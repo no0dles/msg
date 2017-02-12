@@ -1,3 +1,3 @@
-import { PropertyDecoratorUtil } from "@msg/core";
+import { PropertyDecoratorUtil, PropertyDecorator } from "@msg/core";
 
-export const Max = PropertyDecoratorUtil.create<number>("max", null);
+export const Max: PropertyDecorator<number> = PropertyDecoratorUtil.create<number>("max", null);

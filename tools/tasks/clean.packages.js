@@ -7,7 +7,5 @@ module.exports = function (gulp, packages) {
     return 'clean:build:' + package.name
   });
 
-  gulp.task('clean:source', cleanSources);
-  gulp.task('clean:build', cleanBuilds);
   gulp.task('clean', cleanSources.concat(cleanBuilds));
 };

@@ -17,6 +17,7 @@ export * from "./src/metadata/property.metadata";
 export * from "./src/context/emit.context.callback";
 export * from "./src/resolvers/emitted.message";
 export * from "./src/context/listener.callback";
+export * from "./src/metadata/property.decorator"
 export * from "./src/execution/listener";
 export * from "./src/routing/routing";
 
@@ -24,6 +25,6 @@ export * from "./src/decorators/metadata";
 export * from "./src/decorators/inject";
 export * from "./src/decorators/service";
 
-export * from "./src/metadata/class.decorator";
-export * from "./src/metadata/property.decorator";
+export * from "./src/metadata/class.decorator.util";
+export * from "./src/metadata/property.decorator.util";
 export * from "./src/metadata/metadata";

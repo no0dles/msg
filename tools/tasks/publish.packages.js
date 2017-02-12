@@ -10,7 +10,7 @@ module.exports = function (gulp, packages) {
   });
 
   const publish = packages.map(function (package) {
-    return 'publish:' + package.name
+    return 'publishNpm:npm:' + package.name
   });
 
   const tasks = clean

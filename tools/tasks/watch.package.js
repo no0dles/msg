@@ -6,7 +6,7 @@ module.exports = function (gulp, package) {
     stdio: 'inherit'
   };
 
-  gulp.task('watch:source:' + package.name, [], function (done) {
+  gulp.task('watch:' + package.name, [], function (done) {
     spawn('node_modules/.bin/tsc', ['-w', '-p', 'tsconfig.json'], options)
       .on('close', done);
   });

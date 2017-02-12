@@ -1,3 +1,3 @@
-import { PropertyDecoratorUtil } from "@msg/core";
+import { PropertyDecoratorUtil, PropertyDecorator } from "@msg/core";
 
-export const Min = PropertyDecoratorUtil.create<number>("min", null);
+export const Min: PropertyDecorator<number> = PropertyDecoratorUtil.create<number>("min", null);
