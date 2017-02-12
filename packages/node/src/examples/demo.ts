@@ -1,15 +1,21 @@
-import { MessageApp } from "@msg/message";
+import { MessageApp, Message } from "@msg/message";
 import { AppStart } from "../messages/app.start.message";
 
 const app = new MessageApp();
 
+@Message({ key: "trigger" })
+class TriggerMsg {
+
+}
+
 app.listen(AppStart, async(message, context) => {
   console.log('started');
-  await context.emit({ foo: 2, bar: 'lorem' }, { key: "trigger" }).promise;
+  const msg = new TriggerMsg();
+  await context.emit(msg).promise;
   context.end();
 });
 
-app.listen({ key: "trigger" }, (message, context) => {
+app.listen(TriggerMsg, (message, context) => {
   setTimeout(() => {
     context.end(new Error("delayed error"));
   }, 3000);
