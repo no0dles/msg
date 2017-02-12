@@ -18,9 +18,8 @@
     },
     "typeRoots": ["node_modules/@types"]
   },
-  "files": [
-    "index.ts",
-    "src/examples/demo.ts",
-    "src/cli/cli.ts"
+  "exclude": [
+    "**/**.test.ts",
+    "node_modules/**"
   ]
 }

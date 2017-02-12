@@ -19,7 +19,8 @@
     },
     "typeRoots": ["node_modules/@types"]
   },
-  "files": [
-    "index.ts"
+  "exclude": [
+    "**/**.test.ts",
+    "node_modules/**"
   ]
 }

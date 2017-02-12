@@ -7,11 +7,9 @@ export class MessageApp extends App<Message> {
     super(new MessageRouting());
   }
 
-  listen<TMessage>(type: Type<TMessage>, listener: Listener<TMessage, Message>): void {
-    super.listen(type, listener);
-  }
-
-  handle<TMessage>(type: Type<TMessage>, handle: Type<Handle<TMessage, Message>>): void {
-    super.handle(type, handle);
+  on<TMessage>(type: Type<TMessage>, handle: Type<Handle<TMessage, Message>>): void
+  on<TMessage>(type: Type<TMessage>, listener: Listener<TMessage, Message>): void
+  on<TMessage>(type: Type<TMessage>, listener: any): void {
+    super.on(type, listener);
   }
 }

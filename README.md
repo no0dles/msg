@@ -5,8 +5,8 @@
 
 ## Modules
 
-* core
-* message
-* validator
-* node
-* http
+* [core](packages/core/README.md)
+* [message](packages/message/README.md)
+* [validator](packages/validator/README.md)
+* [node](packages/node/README.md)
+* [http](packages/http/README.md)

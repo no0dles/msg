@@ -24,25 +24,25 @@ export class App<TMetadata extends Metadata> {
     this.router.use(app.router);
   }
 
-  public listen<TMessage>(metadata: TMetadata, listener: Listener<TMessage, TMetadata>): void
-  public listen<TMessage>(type: Type<TMessage>, listener: Listener<TMessage, TMetadata>): void
-  public listen<TMessage>(typeOrMetadata: any, listener: Listener<TMessage, TMetadata>): void {
+  public on<TMessage>(metadata: TMetadata, listener: Listener<TMessage, TMetadata>): void
+  public on<TMessage>(metadata: TMetadata, handle: Type<Handle<TMessage, TMetadata>>): void
+  public on<TMessage>(type: Type<TMessage>, listener: Listener<TMessage, TMetadata>): void
+  public on<TMessage>(type: Type<TMessage>, handle: Type<Handle<TMessage, TMetadata>>): void
+  public on<TMessage>(typeOrMetadata: any, listenerOrHandle: any): void {
     if (typeOrMetadata.prototype) {
-      const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata);
-      this.router.add(metadata, () => new ListenerHandle(listener));
+      if(listenerOrHandle.prototype instanceof Handle) {
+        const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata);
+        this.router.add(metadata, () => this.services.resolve<any>(listenerOrHandle));
+      } else {
+        const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata);
+        this.router.add(metadata, () => new ListenerHandle(listenerOrHandle));
+      }
     } else {
-      this.router.add(typeOrMetadata, () => new ListenerHandle(listener));
-    }
-  }
-
-  public handle<TMessage>(metadata: TMetadata, handle: Type<Handle<TMessage, TMetadata>>): void
-  public handle<TMessage>(type: Type<TMessage>, handle: Type<Handle<TMessage, TMetadata>>): void
-  public handle<TMessage>(typeOrMetadata: any, handle: Type<Handle<TMessage, TMetadata>>): void {
-    if (typeOrMetadata.prototype) {
-      const metadata = MetadataUtil.resolveType<TMetadata>(typeOrMetadata);
-      this.router.add(metadata, () => this.services.resolve<any>(handle));
-    } else {
-      this.router.add(typeOrMetadata, () => this.services.resolve<any>(handle));
+      if(listenerOrHandle.prototype instanceof Handle) {
+        this.router.add(typeOrMetadata, () => this.services.resolve<any>(listenerOrHandle));
+      } else {
+        this.router.add(typeOrMetadata, () => new ListenerHandle(listenerOrHandle));
+      }
     }
   }
 

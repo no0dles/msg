@@ -12,7 +12,7 @@ describe('core.app', () => {
     it('should allow type', () => {
       class NonMessage { }
       const app = new App<Metadata>(null);
-      app.listen(NonMessage, () => { });
+      app.on(NonMessage, () => { });
     });
   });
 
@@ -22,7 +22,7 @@ describe('core.app', () => {
       const app = new App<Metadata>({
         matches: () => true
       });
-      app.listen({ }, (emittedMsg, context) => {
+      app.on({ }, (emittedMsg, context) => {
         assert.equal(emittedMsg, message);
         context.end();
         done();
@@ -39,7 +39,7 @@ describe('core.app', () => {
         matches: () => true
       });
 
-      subApp.listen({}, (emittedMsg, context) => {
+      subApp.on({}, (emittedMsg, context) => {
         assert.equal(emittedMsg, message);
         context.end();
         done();
@@ -55,11 +55,11 @@ describe('core.app', () => {
         matches: (source, target) => source["key"] === target["key"]
       });
 
-      app.listen({ key: "req" }, (req, cxt) => {
+      app.on({ key: "req" }, (req, cxt) => {
         cxt.end({}, { key: "res"});
       });
 
-      app.listen({ key: "trigger" }, async(trigger, cxt) => {
+      app.on({ key: "trigger" }, async(trigger, cxt) => {
         const result = cxt.emit({}, { key: "req" });
         const res = await result.first({ key: "res" });
         assert.notEqual(res, null);
@@ -76,7 +76,7 @@ describe('core.app', () => {
       });
       const start = new Date().getTime();
 
-      app.listen({ key: "trigger", timeout: 500 }, () => { });
+      app.on({ key: "trigger", timeout: 500 }, () => { });
 
       const result = app.emit({}, { key: "trigger" });
       result.promise.catch(() => {
@@ -91,13 +91,13 @@ describe('core.app', () => {
         matches: (source, target) => source["key"] === target["key"]
       });
 
-      app.listen({ key: "req" }, (req, cxt) => {
+      app.on({ key: "req" }, (req, cxt) => {
         cxt.emit({}, { key: "res" });
         cxt.emit({}, { key: "res" });
         cxt.end();
       });
 
-      app.listen({ key: "trigger"}, async(trigger, cxt) => {
+      app.on({ key: "trigger"}, async(trigger, cxt) => {
         const result = cxt.emit({}, { key: "req" });
         const res = await result.all({ key: "res" });
         assert.notEqual(res, null);
@@ -132,7 +132,7 @@ describe('core.app', () => {
         }
       }
 
-      app.handle({ key: "trigger" }, MyHandler);
+      app.on({ key: "trigger" }, MyHandler);
       app.emit({}, { key: "trigger" });
     })
   });

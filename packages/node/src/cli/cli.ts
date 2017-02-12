@@ -19,11 +19,11 @@ try {
     root.use(AppUtil.load({ file: args._[i] }));
   }
 
-  for(let key in config.apps) {
-    root.use(AppUtil.load(config.apps[key]));
+  for(let app of config.apps) {
+    root.use(AppUtil.load(app));
   }
 
-  root.listen(AppStopped, (message) => {
+  root.on(AppStopped, (message) => {
     process.exit(message.code || 0);
   });
 

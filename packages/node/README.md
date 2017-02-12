@@ -2,22 +2,23 @@
 
 ## Usage
 ```
-> msgnode [options] <file>
+> msgnode <file> [ ... <file> ]
 
   Options:
-
-    -h, --help           output usage information
-    -V, --version        output the version number
-    -q, --queue <url>    set queue url. defaults to amqp://localhost
+    -e, --env <variable>=<value>    set environment variable
     -c, --config <path>  set config path. defaults to ./node.yml
 
 ```
 
 ## Configuration
 
-node.yml
+.node.yml
 ```yaml
-queue: amqp://localhost:32777
-nodeQueuePrefix: node
-agentQueue: agent
+env: 
+  - NODE_ENV=development
+  - HTTP_PORT=3000
+apps:
+  - module: @msg/logging
+  - module: @msg/http#app
+  - file: ./src/app.js
 ```

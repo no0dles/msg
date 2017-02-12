@@ -3,9 +3,6 @@ env:
   MONGODB_URL: mongodb://localhost
 
 apps:
-  logging:
-    module: @msg/logging
-  http:
-    module: @msg/http#app
-  custom:
-    file: ../../custom/app.js
+  - module: @msg/logging
+  - module: @msg/http#app
+  - file: ../../custom/app.js

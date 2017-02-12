@@ -8,20 +8,20 @@ class TriggerMsg {
 
 }
 
-app.listen(AppStart, async(message, context) => {
+app.on(AppStart, async(message, context) => {
   console.log('started');
   const msg = new TriggerMsg();
   await context.emit(msg).promise;
   context.end();
 });
 
-app.listen(TriggerMsg, (message, context) => {
+app.on(TriggerMsg, (message, context) => {
   setTimeout(() => {
     context.end(new Error("delayed error"));
   }, 3000);
 });
 
-app.listen(AppStart, (message, context) => {
+app.on(AppStart, (message, context) => {
   console.warn('an error is about to happen');
   context.end(new Error("some error"));
 });
