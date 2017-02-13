@@ -1,13 +1,13 @@
 {
-  "name": "@msg/validator",
-  "description": "validation of messages",
+  "name": "@msg/auth",
+  "description": "",
   "version": "0.0.34",
   "dependencies": {
     "@msg/core": "0.0.34",
-    "@msg/message": "0.0.34"
+    "@msg/message": "0.0.34",
+    "@msg/validator": "0.0.34"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.37",
     "@types/node": "^6.0.59",
     "typescript": "^2.1.4"
   }

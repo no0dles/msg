@@ -1,13 +1,13 @@
 {
   "name": "@msg/node",
   "description": "",
-  "version": "0.0.32",
+  "version": "0.0.34",
   "bin": {
     "msgnode": "src/cli/cli.js"
   },
   "dependencies": {
-    "@msg/core": "0.0.32",
-    "@msg/message": "0.0.32",
+    "@msg/core": "0.0.34",
+    "@msg/message": "0.0.34",
     "colors": "^1.1.2",
     "minimist": "^1.2.0",
     "uuid": "^3.0.1",

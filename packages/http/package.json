@@ -1,11 +1,11 @@
 {
   "name": "@msg/http",
   "description": "",
-  "version": "0.0.32",
+  "version": "0.0.34",
   "dependencies": {
-    "@msg/core": "0.0.32",
-    "@msg/message": "0.0.32",
-    "@msg/node": "0.0.32",
+    "@msg/core": "0.0.34",
+    "@msg/message": "0.0.34",
+    "@msg/node": "0.0.34",
     "uuid": "^3.0.1"
   },
   "devDependencies": {

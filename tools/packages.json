@@ -16,6 +16,10 @@
     "dependencies": ["core", "message"]
   },
   {
+    "name": "auth",
+    "dependencies": ["core", "message", "validator"]
+  },
+  {
     "name": "http",
     "dependencies": ["core", "message", "node"]
   }

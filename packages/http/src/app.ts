@@ -7,8 +7,8 @@ import { StopHandle } from "./handles/stop.handle";
 
 const app = new MessageApp();
 
-app.handle(AppStart, StartHandle);
-app.handle(ParseRequest, ParseHandleHandle);
-app.handle(AppStop, StopHandle);
+app.on(AppStart, StartHandle);
+app.on(ParseRequest, ParseHandleHandle);
+app.on(AppStop, StopHandle);
 
 export = app;
