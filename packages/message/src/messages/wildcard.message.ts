@@ -1,6 +1,6 @@
 import { Message } from "../decorators/message";
 
 @Message({ key: "#" })
-export class Wildchard {
+export class Wildcard {
 
 }

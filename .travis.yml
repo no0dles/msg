@@ -9,6 +9,7 @@ install:
   - npm install
 
 script:
+  - gulp init
   - gulp install:source
   - gulp build:test
   - gulp install:build

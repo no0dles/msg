@@ -1,5 +1,5 @@
 import { MessageApp } from "@msg/message";
-import { Wildchard } from "@msg/message";
+import { Wildcard } from "@msg/message";
 import { LengthHandle } from "./length.handle";
 import { Message } from "@msg/message";
 import { Length } from "../decorators/length";
@@ -14,7 +14,7 @@ describe('length.handle', () => {
     }
 
     const app = new MessageApp();
-    app.handle(Wildchard, LengthHandle);
+    app.on(Wildcard, LengthHandle);
 
     const msg = new TestMsg();
     msg.message = 'a';

@@ -12,7 +12,7 @@ export class LengthHandle extends MessageHandle<any> {
         continue;
 
       const value = message[property];
-      if(!value)
+      if(value === null || value === undefined)
         continue;
 
       if(length.min && length.min > value.length) {
@@ -22,9 +22,9 @@ export class LengthHandle extends MessageHandle<any> {
       if(length.max && length.max > value.length) {
         return context.end(new Error(`${property} requires a maximum length of ${length.max}`));
       }
-
-      context.end();
     }
+
+    context.end();
   }
 }
 

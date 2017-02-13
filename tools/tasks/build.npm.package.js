@@ -3,8 +3,8 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 
 function mergePackageJson(package) {
-  const base = require('../package.json');
-  const extension = require(path.join(package.sourcePath, 'package.json'));
+  const base = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json')).toString());
+  const extension = JSON.parse(fs.readFileSync(path.join(package.sourcePath, 'package.json')).toString());
 
   for(var key in extension) {
     base[key] = extension[key];
